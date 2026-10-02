@@ -174,9 +174,56 @@ const partBHeader = [
   new Paragraph({ text: "", spacing: { after: 160 } }),
   para("GitHub Repository Link:", { run: { bold: true } }),
   new Paragraph({
-    children: [new TextRun({ text: "[GITHUB-REPO-URL]", color: "0563C1", underline: {} })],
+    children: [new TextRun({ text: "https://github.com/unmesh1621-ai/ResumeJD-Matcher", color: "0563C1", underline: {} })],
     spacing: { after: 300 },
   }),
+];
+
+const datasetNotice = [
+  new Table({
+    width: { size: 10500, type: WidthType.DXA },
+    borders: {
+      top: { style: BorderStyle.SINGLE, size: 6, color: "C00000" },
+      bottom: { style: BorderStyle.SINGLE, size: 6, color: "C00000" },
+      left: { style: BorderStyle.SINGLE, size: 6, color: "C00000" },
+      right: { style: BorderStyle.SINGLE, size: 6, color: "C00000" },
+      insideHorizontal: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
+      insideVertical: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
+    },
+    rows: [
+      new TableRow({
+        children: [
+          new TableCell({
+            width: { size: 10500, type: WidthType.DXA },
+            shading: { type: ShadingType.CLEAR, fill: "FCE4E4" },
+            margins: { top: 160, bottom: 160, left: 200, right: 200 },
+            children: [
+              new Paragraph({
+                children: [new TextRun({ text: "Dataset limitation — read before the rest of this report", bold: true, size: 22, color: "C00000" })],
+                spacing: { after: 100 },
+              }),
+              new Paragraph({
+                children: [new TextRun({
+                  text:
+                    "The results in this interim report are NOT from the three Kaggle datasets named in the " +
+                    "project synopsis. Kaggle API credentials were not available in the development " +
+                    "environment, so a smaller, self-generated SYNTHETIC resume–JD dataset was built instead " +
+                    "(150 resumes, 150 job descriptions, 1,200 pairs — roughly 1/40th the 5,000–8,000 pairs " +
+                    "specified, and far short of the 2,400+ resumes / 124,000+ job postings in the real " +
+                    "sources). All four models, the explainability layer, and the bias probe are real, " +
+                    "working code trained on this synthetic data; none of the numbers below should be read " +
+                    "as results on the real target datasets. Acquiring the real data and re-running this same " +
+                    "pipeline is the first item under Section 7, Remaining Work.",
+                  size: 20,
+                })],
+              }),
+            ],
+          }),
+        ],
+      }),
+    ],
+  }),
+  new Paragraph({ text: "", spacing: { after: 300 } }),
 ];
 
 // ---------- 1. Literature review ----------
@@ -314,14 +361,14 @@ function modelSection(letter, title, key, description, figPrefix) {
 
 const statusRows = [
   ["Model", "Owner (Member)", "Status", "Val Accuracy", "Val AUC", "Notes"],
-  ["MLP", "Unmesh Vardhan", "Complete", pct(metrics.mlp.val_accuracy), fmtAuc(metrics.mlp.val_auc), `${metrics.mlp.epochs_run} epochs; bag-of-averaged-embeddings baseline, no sequence modelling`],
-  ["1D-CNN", "ShanmugSrinivas", "Complete", pct(metrics.cnn.val_accuracy), fmtAuc(metrics.cnn.val_auc), `${metrics.cnn.epochs_run} epochs; multi-kernel (3,4,5) architecture, batch-normalized`],
-  ["BiLSTM", "Tanmay Sharma", "Complete", pct(metrics.bilstm.val_accuracy), fmtAuc(metrics.bilstm.val_auc), `${metrics.bilstm.epochs_run} epochs; bidirectional recurrent model, mean-pooled over timesteps`],
-  ["SBERT", "Unmesh Vardhan", "Complete", pct(metrics.sbert.val_accuracy), fmtAuc(metrics.sbert.val_auc), `${metrics.sbert.epochs_run} epochs; fine-tuned all-MiniLM-L6-v2 pretrained Transformer`],
+  ["MLP", "Unmesh Vardhan", "Trained & validated (synthetic data)", pct(metrics.mlp.val_accuracy), fmtAuc(metrics.mlp.val_auc), `${metrics.mlp.epochs_run} epochs; bag-of-averaged-embeddings baseline, no sequence modelling`],
+  ["1D-CNN", "ShanmugSrinivas", "Trained & validated (synthetic data)", pct(metrics.cnn.val_accuracy), fmtAuc(metrics.cnn.val_auc), `${metrics.cnn.epochs_run} epochs; multi-kernel (3,4,5) architecture, batch-normalized`],
+  ["BiLSTM", "Tanmay Sharma", "Trained & validated (synthetic data)", pct(metrics.bilstm.val_accuracy), fmtAuc(metrics.bilstm.val_auc), `${metrics.bilstm.epochs_run} epochs; bidirectional recurrent model, mean-pooled over timesteps`],
+  ["SBERT", "Unmesh Vardhan", "Trained & validated (synthetic data)", pct(metrics.sbert.val_accuracy), fmtAuc(metrics.sbert.val_auc), `${metrics.sbert.epochs_run} epochs; fine-tuned all-MiniLM-L6-v2 pretrained Transformer`],
 ];
 
 function statusTable() {
-  const widths = [1300, 2000, 1300, 1500, 1200, 3200];
+  const widths = [1100, 1700, 2300, 1300, 1100, 2900];
   const header = new TableRow({
     tableHeader: true,
     children: statusRows[0].map((t, i) => cell(t, { bold: true, shade: "D9E2F3", width: widths[i] })),
@@ -506,7 +553,7 @@ const remainingRows = [
   ["3", "Error analysis on misclassified pairs for the weaker models (1D-CNN, BiLSTM)", "16 Oct 2026"],
   ["4", "Adversarial debiasing: add a gradient-reversal adversary to the best encoder and compare probe accuracy / matching AUC before vs. after", "18 Oct 2026"],
   ["5", "Final report writing (Part C): Abstract, Methodology per model, Results & Discussion, Fairness Audit, Conclusion, Future Work, References (12+)", "27 Oct 2026"],
-  ["6", "Presentation slides, viva preparation, final code push to GitHub (replacing the placeholder link above)", "31 Oct 2026"],
+  ["6", "Presentation slides, viva preparation; push final (real-data) code and results to the GitHub repository above, replacing this interim synthetic-data snapshot", "31 Oct 2026"],
 ];
 
 function remainingTable() {
@@ -557,6 +604,7 @@ const doc = new Document({
       children: [
         ...titlePage,
         ...partBHeader,
+        ...datasetNotice,
         ...literatureSection,
         ...datasetSection,
         ...modelsSection,
