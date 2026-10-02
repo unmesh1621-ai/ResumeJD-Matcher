@@ -1,0 +1,86 @@
+category,skill
+Information Technology,python
+Information Technology,java
+Information Technology,sql
+Information Technology,aws
+Information Technology,docker
+Information Technology,kubernetes
+Information Technology,react
+Information Technology,linux
+Information Technology,git
+Information Technology,machine learning
+Information Technology,rest api
+Information Technology,agile development
+Information Technology,ci cd pipelines
+Information Technology,cloud computing
+Information Technology,javascript
+Human Resources,recruitment
+Human Resources,onboarding
+Human Resources,payroll processing
+Human Resources,employee relations
+Human Resources,hr policy design
+Human Resources,performance management
+Human Resources,talent acquisition
+Human Resources,conflict resolution
+Human Resources,benefits administration
+Human Resources,labor law
+Human Resources,training and development
+Human Resources,compliance auditing
+Human Resources,hris systems
+Human Resources,workforce planning
+Sales,lead generation
+Sales,crm software
+Sales,salesforce
+Sales,negotiation
+Sales,account management
+Sales,cold calling
+Sales,pipeline management
+Sales,b2b sales
+Sales,quota attainment
+Sales,customer retention
+Sales,sales forecasting
+Sales,prospecting
+Sales,closing deals
+Sales,territory management
+Healthcare,patient care
+Healthcare,clinical documentation
+Healthcare,ehr systems
+Healthcare,hipaa compliance
+Healthcare,medical terminology
+Healthcare,nursing care
+Healthcare,diagnosis support
+Healthcare,treatment planning
+Healthcare,triage
+Healthcare,vital signs monitoring
+Healthcare,infection control
+Healthcare,patient safety
+Healthcare,care coordination
+Healthcare,medical records management
+Engineering,autocad
+Engineering,solidworks
+Engineering,structural analysis
+Engineering,project management
+Engineering,matlab
+Engineering,six sigma
+Engineering,quality control
+Engineering,manufacturing processes
+Engineering,cad design
+Engineering,mechanical design
+Engineering,thermodynamics
+Engineering,materials science
+Engineering,blueprint reading
+Engineering,process improvement
+Finance,financial modeling
+Finance,excel
+Finance,accounting
+Finance,budgeting
+Finance,forecasting
+Finance,gaap standards
+Finance,financial analysis
+Finance,risk management
+Finance,auditing
+Finance,bloomberg terminal
+Finance,variance analysis
+Finance,investment analysis
+Finance,tax preparation
+Finance,reconciliation

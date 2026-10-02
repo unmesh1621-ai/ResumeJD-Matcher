@@ -1,0 +1,9 @@
+{
+  "encoder_used": "sbert",
+  "encoder_val_auc": 0.9768854840840048,
+  "n_resumes": 150,
+  "probe_test_accuracy": 0.8222222222222222,
+  "majority_class_baseline_accuracy": 0.5555555555555556,
+  "leakage_gap": 0.2666666666666666,
+  "interpretation": "Probe accuracy clearly above the majority-class baseline indicates the matching encoder's embedding space leaks demographic-proxy (name-derived) information, even though proxy group was never an explicit input to the matching model."
+}

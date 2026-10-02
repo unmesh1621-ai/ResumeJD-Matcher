@@ -1,0 +1,14 @@
+{
+  "model": "MLP",
+  "trainable_parameters": 46336,
+  "epochs_run": 27,
+  "best_epoch": 22,
+  "best_val_loss": 0.029464037468036015,
+  "val_accuracy": 0.9111111111111111,
+  "val_precision": 0.8072289156626506,
+  "val_recall": 1.0,
+  "val_f1": 0.8933333333333333,
+  "val_auc": 0.9525822216351869,
+  "train_seconds": 15.144094467163086,
+  "device": "cpu"
+}

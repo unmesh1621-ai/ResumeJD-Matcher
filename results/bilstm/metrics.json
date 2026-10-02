@@ -1,0 +1,14 @@
+{
+  "model": "BiLSTM",
+  "trainable_parameters": 141632,
+  "epochs_run": 14,
+  "best_epoch": 9,
+  "best_val_loss": 0.07503969098130862,
+  "val_accuracy": 0.9,
+  "val_precision": 0.788235294117647,
+  "val_recall": 1.0,
+  "val_f1": 0.881578947368421,
+  "val_auc": 0.9574692907145688,
+  "train_seconds": 93.3716299533844,
+  "device": "cpu"
+}

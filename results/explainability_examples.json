@@ -1,0 +1,178 @@
+[
+  {
+    "resume_id": "R139",
+    "jd_id": "J134",
+    "resume_category": "Finance",
+    "jd_category": "Finance",
+    "similarity_label": 0.453,
+    "resume_skills": [
+      "budgeting",
+      "financial modeling",
+      "forecasting"
+    ],
+    "jd_skills": [
+      "accounting",
+      "bloomberg terminal",
+      "reconciliation"
+    ],
+    "matched_skills": [],
+    "missing_skills": [
+      "accounting",
+      "bloomberg terminal",
+      "reconciliation"
+    ],
+    "keyword_overlap_ratio": 0.0
+  },
+  {
+    "resume_id": "R127",
+    "jd_id": "J137",
+    "resume_category": "Finance",
+    "jd_category": "Finance",
+    "similarity_label": 0.647,
+    "resume_skills": [
+      "auditing",
+      "excel",
+      "gaap standards",
+      "investment analysis"
+    ],
+    "jd_skills": [
+      "auditing",
+      "excel",
+      "financial modeling",
+      "reconciliation",
+      "variance analysis"
+    ],
+    "matched_skills": [
+      "auditing",
+      "excel"
+    ],
+    "missing_skills": [
+      "financial modeling",
+      "reconciliation",
+      "variance analysis"
+    ],
+    "keyword_overlap_ratio": 0.4
+  },
+  {
+    "resume_id": "R133",
+    "jd_id": "J55",
+    "resume_category": "Finance",
+    "jd_category": "Sales",
+    "similarity_label": 0.262,
+    "resume_skills": [
+      "accounting",
+      "auditing",
+      "financial modeling",
+      "investment analysis"
+    ],
+    "jd_skills": [
+      "account management",
+      "customer retention",
+      "excel",
+      "forecasting",
+      "pipeline management",
+      "sales forecasting",
+      "salesforce"
+    ],
+    "matched_skills": [],
+    "missing_skills": [
+      "account management",
+      "customer retention",
+      "excel",
+      "forecasting",
+      "pipeline management",
+      "sales forecasting",
+      "salesforce"
+    ],
+    "keyword_overlap_ratio": 0.0
+  },
+  {
+    "resume_id": "R126",
+    "jd_id": "J147",
+    "resume_category": "Finance",
+    "jd_category": "Finance",
+    "similarity_label": 0.871,
+    "resume_skills": [
+      "accounting",
+      "bloomberg terminal",
+      "excel",
+      "investment analysis",
+      "risk management"
+    ],
+    "jd_skills": [
+      "bloomberg terminal",
+      "excel",
+      "risk management"
+    ],
+    "matched_skills": [
+      "bloomberg terminal",
+      "excel",
+      "risk management"
+    ],
+    "missing_skills": [],
+    "keyword_overlap_ratio": 1.0
+  },
+  {
+    "resume_id": "R55",
+    "jd_id": "J106",
+    "resume_category": "Sales",
+    "jd_category": "Engineering",
+    "similarity_label": 0.271,
+    "resume_skills": [
+      "closing deals",
+      "cold calling",
+      "customer retention",
+      "forecasting",
+      "sales forecasting"
+    ],
+    "jd_skills": [
+      "autocad",
+      "blueprint reading",
+      "cad design",
+      "six sigma",
+      "structural analysis",
+      "thermodynamics"
+    ],
+    "matched_skills": [],
+    "missing_skills": [
+      "autocad",
+      "blueprint reading",
+      "cad design",
+      "six sigma",
+      "structural analysis",
+      "thermodynamics"
+    ],
+    "keyword_overlap_ratio": 0.0
+  },
+  {
+    "resume_id": "R17",
+    "jd_id": "J11",
+    "resume_category": "Information Technology",
+    "jd_category": "Information Technology",
+    "similarity_label": 0.64,
+    "resume_skills": [
+      "git",
+      "java",
+      "javascript",
+      "machine learning",
+      "react"
+    ],
+    "jd_skills": [
+      "excel",
+      "java",
+      "linux",
+      "machine learning",
+      "python"
+    ],
+    "matched_skills": [
+      "java",
+      "machine learning"
+    ],
+    "missing_skills": [
+      "excel",
+      "linux",
+      "python"
+    ],
+    "keyword_overlap_ratio": 0.4
+  }
+]

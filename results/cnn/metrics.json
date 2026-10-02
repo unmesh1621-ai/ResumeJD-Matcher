@@ -1,0 +1,14 @@
+{
+  "model": "1D-CNN",
+  "trainable_parameters": 145280,
+  "epochs_run": 12,
+  "best_epoch": 7,
+  "best_val_loss": 0.0979318159321944,
+  "val_accuracy": 0.6888888888888889,
+  "val_precision": 0.5447154471544715,
+  "val_recall": 1.0,
+  "val_f1": 0.7052631578947368,
+  "val_auc": 0.8367454761590278,
+  "train_seconds": 25.21452760696411,
+  "device": "cpu"
+}
