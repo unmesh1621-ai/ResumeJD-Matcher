@@ -140,11 +140,12 @@ class SiameseSBERT(nn.Module):
     cosine-similarity objective as the other three models.
     """
 
-    def __init__(self, model_name="sentence-transformers/all-MiniLM-L6-v2"):
+    def __init__(self, model_name="sentence-transformers/all-MiniLM-L6-v2", max_len=128):
         super().__init__()
         from transformers import AutoModel, AutoTokenizer
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
         self.backbone = AutoModel.from_pretrained(model_name)
+        self.max_len = max_len
 
     def _mean_pool(self, model_output, attention_mask):
         token_embeddings = model_output.last_hidden_state
@@ -155,7 +156,7 @@ class SiameseSBERT(nn.Module):
 
     def encode_texts(self, texts, device):
         enc = self.tokenizer(
-            list(texts), padding=True, truncation=True, max_length=128,
+            list(texts), padding=True, truncation=True, max_length=self.max_len,
             return_tensors="pt",
         ).to(device)
         out = self.backbone(**enc)

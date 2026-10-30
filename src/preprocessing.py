@@ -41,7 +41,8 @@ class Vocab:
             token_to_id[tok] = len(token_to_id)
         return cls(token_to_id)
 
-    def encode(self, text, max_len=MAX_LEN):
+    def encode(self, text, max_len=None):
+        max_len = max_len or MAX_LEN
         ids = [self.token_to_id.get(tok, self.oov_id) for tok in tokenize(text)]
         ids = ids[:max_len]
         ids = ids + [self.pad_id] * (max_len - len(ids))
