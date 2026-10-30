@@ -1,0 +1,12 @@
+# PyTorch: for GPU install the CUDA build, e.g.
+#   pip install torch --index-url https://download.pytorch.org/whl/cu128
+torch>=2.6
+transformers>=4.45
+scikit-learn>=1.5
+scipy>=1.13
+numpy>=1.26
+pandas>=2.2
+pyarrow>=16
+matplotlib>=3.8
+pypdf>=4.0
+streamlit>=1.38

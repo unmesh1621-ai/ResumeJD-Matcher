@@ -4,3 +4,9 @@ node_modules/
 results/sbert/backbone/*.safetensors
 report/_check/
 report/_verify*/
+
+# real data is downloaded by data/download_real.py (too large for git)
+data/real/
+data/pairs_real.csv
+results/**/backbone/*.safetensors
+.code-review-graph/
