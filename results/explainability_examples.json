@@ -1,178 +1,177 @@
 [
   {
-    "resume_id": "R139",
-    "jd_id": "J134",
+    "resume_id": "R355",
+    "jd_id": "J312",
     "resume_category": "Finance",
     "jd_category": "Finance",
-    "similarity_label": 0.453,
+    "similarity_label": 0.577,
     "resume_skills": [
-      "budgeting",
-      "financial modeling",
-      "forecasting"
-    ],
-    "jd_skills": [
       "accounting",
-      "bloomberg terminal",
-      "reconciliation"
-    ],
-    "matched_skills": [],
-    "missing_skills": [
-      "accounting",
-      "bloomberg terminal",
-      "reconciliation"
-    ],
-    "keyword_overlap_ratio": 0.0
-  },
-  {
-    "resume_id": "R127",
-    "jd_id": "J137",
-    "resume_category": "Finance",
-    "jd_category": "Finance",
-    "similarity_label": 0.647,
-    "resume_skills": [
-      "auditing",
-      "excel",
-      "gaap standards",
-      "investment analysis"
-    ],
-    "jd_skills": [
-      "auditing",
-      "excel",
-      "financial modeling",
       "reconciliation",
+      "risk management",
+      "tax preparation"
+    ],
+    "jd_skills": [
+      "financial analysis",
+      "gaap standards",
+      "reconciliation",
+      "risk management",
       "variance analysis"
     ],
     "matched_skills": [
-      "auditing",
-      "excel"
+      "reconciliation",
+      "risk management"
     ],
     "missing_skills": [
-      "financial modeling",
-      "reconciliation",
+      "financial analysis",
+      "gaap standards",
       "variance analysis"
     ],
     "keyword_overlap_ratio": 0.4
-  },
-  {
-    "resume_id": "R133",
-    "jd_id": "J55",
-    "resume_category": "Finance",
-    "jd_category": "Sales",
-    "similarity_label": 0.262,
-    "resume_skills": [
-      "accounting",
-      "auditing",
-      "financial modeling",
-      "investment analysis"
-    ],
-    "jd_skills": [
-      "account management",
-      "customer retention",
-      "excel",
-      "forecasting",
-      "pipeline management",
-      "sales forecasting",
-      "salesforce"
-    ],
-    "matched_skills": [],
-    "missing_skills": [
-      "account management",
-      "customer retention",
-      "excel",
-      "forecasting",
-      "pipeline management",
-      "sales forecasting",
-      "salesforce"
-    ],
-    "keyword_overlap_ratio": 0.0
-  },
-  {
-    "resume_id": "R126",
-    "jd_id": "J147",
-    "resume_category": "Finance",
-    "jd_category": "Finance",
-    "similarity_label": 0.871,
-    "resume_skills": [
-      "accounting",
-      "bloomberg terminal",
-      "excel",
-      "investment analysis",
-      "risk management"
-    ],
-    "jd_skills": [
-      "bloomberg terminal",
-      "excel",
-      "risk management"
-    ],
-    "matched_skills": [
-      "bloomberg terminal",
-      "excel",
-      "risk management"
-    ],
-    "missing_skills": [],
-    "keyword_overlap_ratio": 1.0
   },
   {
     "resume_id": "R55",
-    "jd_id": "J106",
-    "resume_category": "Sales",
-    "jd_category": "Engineering",
-    "similarity_label": 0.271,
+    "jd_id": "J81",
+    "resume_category": "Information Technology",
+    "jd_category": "Human Resources",
+    "similarity_label": 0.1,
     "resume_skills": [
-      "closing deals",
-      "cold calling",
-      "customer retention",
-      "forecasting",
-      "sales forecasting"
+      "excel",
+      "java",
+      "linux",
+      "python"
     ],
     "jd_skills": [
-      "autocad",
-      "blueprint reading",
-      "cad design",
-      "six sigma",
-      "structural analysis",
-      "thermodynamics"
+      "auditing",
+      "compliance auditing",
+      "conflict resolution",
+      "performance management",
+      "workforce planning"
     ],
     "matched_skills": [],
     "missing_skills": [
-      "autocad",
-      "blueprint reading",
-      "cad design",
-      "six sigma",
-      "structural analysis",
-      "thermodynamics"
+      "auditing",
+      "compliance auditing",
+      "conflict resolution",
+      "performance management",
+      "workforce planning"
     ],
     "keyword_overlap_ratio": 0.0
   },
   {
-    "resume_id": "R17",
-    "jd_id": "J11",
+    "resume_id": "R317",
+    "jd_id": "J358",
+    "resume_category": "Finance",
+    "jd_category": "Finance",
+    "similarity_label": 0.708,
+    "resume_skills": [
+      "accounting",
+      "financial modeling",
+      "gaap standards",
+      "risk management",
+      "tax preparation"
+    ],
+    "jd_skills": [
+      "accounting",
+      "bloomberg terminal",
+      "investment analysis",
+      "risk management"
+    ],
+    "matched_skills": [
+      "accounting",
+      "risk management"
+    ],
+    "missing_skills": [
+      "bloomberg terminal",
+      "investment analysis"
+    ],
+    "keyword_overlap_ratio": 0.5
+  },
+  {
+    "resume_id": "R192",
+    "jd_id": "J218",
+    "resume_category": "Healthcare",
+    "jd_category": "Healthcare",
+    "similarity_label": 0.405,
+    "resume_skills": [
+      "clinical documentation",
+      "diagnosis support",
+      "medical terminology",
+      "nursing care",
+      "patient care",
+      "treatment planning",
+      "triage"
+    ],
+    "jd_skills": [
+      "medical records management",
+      "patient safety"
+    ],
+    "matched_skills": [],
+    "missing_skills": [
+      "medical records management",
+      "patient safety"
+    ],
+    "keyword_overlap_ratio": 0.0
+  },
+  {
+    "resume_id": "R34",
+    "jd_id": "J27",
     "resume_category": "Information Technology",
     "jd_category": "Information Technology",
-    "similarity_label": 0.64,
+    "similarity_label": 0.583,
     "resume_skills": [
-      "git",
+      "agile development",
+      "aws",
       "java",
-      "javascript",
+      "machine learning",
+      "python",
+      "rest api"
+    ],
+    "jd_skills": [
+      "agile development",
+      "cloud computing",
+      "docker",
       "machine learning",
       "react"
     ],
-    "jd_skills": [
-      "excel",
-      "java",
-      "linux",
-      "machine learning",
-      "python"
-    ],
     "matched_skills": [
-      "java",
+      "agile development",
       "machine learning"
     ],
     "missing_skills": [
-      "excel",
-      "linux",
-      "python"
+      "cloud computing",
+      "docker",
+      "react"
     ],
     "keyword_overlap_ratio": 0.4
+  },
+  {
+    "resume_id": "R219",
+    "jd_id": "J206",
+    "resume_category": "Healthcare",
+    "jd_category": "Healthcare",
+    "similarity_label": 0.643,
+    "resume_skills": [
+      "care coordination",
+      "clinical documentation",
+      "excel",
+      "patient care",
+      "patient safety",
+      "treatment planning",
+      "triage"
+    ],
+    "jd_skills": [
+      "ehr systems",
+      "excel",
+      "hipaa compliance"
+    ],
+    "matched_skills": [
+      "excel"
+    ],
+    "missing_skills": [
+      "ehr systems",
+      "hipaa compliance"
+    ],
+    "keyword_overlap_ratio": 0.333
   }
 ]

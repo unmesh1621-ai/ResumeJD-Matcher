@@ -111,20 +111,25 @@ FEMALE_PROXY_NAMES = [
     "Susan", "Jessica", "Sarah", "Karen", "Lisa", "Nancy", "Betty", "Sandra",
 ]
 
-N_RESUMES_PER_CATEGORY = 25
-N_JDS_PER_CATEGORY = 25
+N_RESUMES_PER_CATEGORY = 60
+N_JDS_PER_CATEGORY = 60
 SKILLS_PER_RESUME = (5, 8)
 SKILLS_PER_JD = (4, 7)
 
 
 def make_resume_text(name, category, skills):
+    # Deliberately does NOT mention `category` anywhere in the text: an
+    # earlier version embedded the literal category name in every resume
+    # and JD, which let every model trivially learn "same category name
+    # appears in both documents" instead of reasoning about actual skill
+    # overlap. Matching must be inferable from skills alone.
     exp = random.choice(EXPERIENCE_LEVELS)
     phrased = [paraphrase(s) for s in skills]
     skills_sentence = ", ".join(phrased[:-1]) + f", and {phrased[-1]}" if len(phrased) > 1 else phrased[0]
     text = (
-        f"{name} is a {category} professional with {exp} of experience. "
+        f"{name} is a professional with {exp} of experience. "
         f"Core skills include {skills_sentence}. "
-        f"Proven track record of delivering results in {category.lower()} roles, "
+        f"Proven track record of delivering results, "
         f"with hands-on experience applying {phrased[0]} and {phrased[-1]} "
         f"in fast-paced team environments."
     )
@@ -137,10 +142,10 @@ def make_jd_text(category, skills):
     phrased = [paraphrase(s) for s in skills]
     skills_sentence = ", ".join(phrased[:-1]) + f", and {phrased[-1]}" if len(phrased) > 1 else phrased[0]
     text = (
-        f"We are seeking a {category} professional with strong skills in "
+        f"We are seeking a professional with strong skills in "
         f"{skills_sentence}. The ideal candidate has hands-on experience with "
         f"{phrased[0]} and {phrased[-1]}, and will be responsible for applying "
-        f"{category.lower()} best practices in a collaborative team setting."
+        f"these skills in a collaborative team setting."
     )
     if random.random() < 0.3:
         text += " " + random.choice(FILLER_SENTENCES)
@@ -191,12 +196,12 @@ def build_pairs(resumes, jds):
         same_cat_jds = [j for j in jds if j[1] == r_cat]
         diff_cat_jds = [j for j in jds if j[1] != r_cat]
 
-        for j_id, j_cat, j_skills, j_text in random.sample(same_cat_jds, min(4, len(same_cat_jds))):
+        for j_id, j_cat, j_skills, j_text in random.sample(same_cat_jds, min(6, len(same_cat_jds))):
             overlap = skill_overlap_score(r_skills, j_skills)
             label = 0.45 + 0.5 * overlap + random.uniform(-0.08, 0.08)
             rows.append([r_id, j_id, r_text, j_text, r_cat, j_cat, round(min(max(label, 0.0), 1.0), 3)])
 
-        for j_id, j_cat, j_skills, j_text in random.sample(diff_cat_jds, min(4, len(diff_cat_jds))):
+        for j_id, j_cat, j_skills, j_text in random.sample(diff_cat_jds, min(6, len(diff_cat_jds))):
             overlap = skill_overlap_score(r_skills, j_skills)
             label = 0.15 + 0.45 * overlap + random.uniform(-0.08, 0.08)
             rows.append([r_id, j_id, r_text, j_text, r_cat, j_cat, round(min(max(label, 0.0), 1.0), 3)])

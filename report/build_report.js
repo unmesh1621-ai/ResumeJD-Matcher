@@ -208,13 +208,29 @@ const datasetNotice = [
                     "The results in this interim report are NOT from the three Kaggle datasets named in the " +
                     "project synopsis. Kaggle API credentials were not available in the development " +
                     "environment, so a smaller, self-generated SYNTHETIC resume–JD dataset was built instead " +
-                    "(150 resumes, 150 job descriptions, 1,200 pairs — roughly 1/40th the 5,000–8,000 pairs " +
-                    "specified, and far short of the 2,400+ resumes / 124,000+ job postings in the real " +
-                    "sources). All four models, the explainability layer, and the bias probe are real, " +
-                    "working code trained on this synthetic data; none of the numbers below should be read " +
-                    "as results on the real target datasets. Acquiring the real data and re-running this same " +
-                    "pipeline is the first item under Section 7, Remaining Work.",
+                    "and has since been scaled up once (360 resumes, 360 job descriptions, 4,320 pairs — " +
+                    "close to, but still short of, the 5,000–8,000 pairs specified, and far short of the " +
+                    "2,400+ resumes / 124,000+ job postings in the real sources). All four models, the " +
+                    "explainability layer, and the bias probe are real, working code trained on this " +
+                    "synthetic data; none of the numbers below should be read as results on the real target " +
+                    "datasets. Acquiring the real data and re-running this same pipeline is the first item " +
+                    "under Section 7, Remaining Work.",
                   size: 20,
+                })],
+              }),
+              new Paragraph({
+                children: [new TextRun({
+                  text:
+                    "Scaling up the dataset also surfaced and fixed a real methodology bug: the first, " +
+                    "smaller-scale version of this dataset accidentally embedded the job category's name as " +
+                    "literal text in every resume and JD (e.g. “...is an Information Technology " +
+                    "professional...”), which let every model learn a trivial “same category name in both " +
+                    "documents” shortcut instead of reasoning about actual skill overlap — confirmed by " +
+                    "finding 100% identical predictions across three independently-trained architectures. " +
+                    "This has been fixed (category names no longer appear in the generated text) and all " +
+                    "results below are from the corrected, leak-free dataset. See Section 3 for the related " +
+                    "training-stability fixes this also exposed.",
+                  size: 20, italics: true,
                 })],
               }),
             ],
@@ -232,7 +248,7 @@ const litRows = [
   ["Paper (Author, Year)", "Method", "Dataset", "Key Result", "Relevance to Project"],
   ["Zhu et al. (2018)", "PJFNN (CNN-based bipartite Person-Job Fit)", "Historical job applications", "Learns joint candidate/job representations from past applications", "Established neural person-job matching as a representation-learning problem"],
   ["Qin et al. (2018)", "Ability-aware attention network", "Resume/JD pairs", "Attention over ability requirements improves person-job fit prediction", "Motivates attention-style weighting over raw skill overlap"],
-  ["Kim (2014)", "Multi-kernel 1D-CNN for sentence classification", "SST-2, MR, TREC", "Multi-kernel CNN matches deeper models on several benchmarks", "Basis for the multi-kernel (3, 4, 5) 1D-CNN encoder we implement"],
+  ["Kim (2014)", "Multi-kernel 1D-CNN for sentence classification", "SST-2, MR, TREC", "Multi-kernel CNN matches deeper models on several benchmarks", "Basis for the multi-kernel 1D-CNN encoder we implement (kernel widths 3, 5, 7)"],
   ["Reimers & Gurevych (2019)", "Sentence-BERT (Siamese bi-encoder)", "NLI, STS benchmarks", "Siamese bi-encoders give efficient, high-quality sentence embeddings without pairwise cross-attention", "Direct basis for our fine-tuned SBERT bi-encoder (all-MiniLM-L6-v2)"],
   ["Sanh et al. (2019)", "DistilBERT (knowledge distillation)", "GLUE", "Keeps ~97% of BERT accuracy at 40% fewer parameters", "Motivates using a small, fast pretrained Transformer backbone under our time/compute budget"],
   ["De-Arteaga et al. (2019)", "Bias in Bios (TPR gender gap)", "Biography/occupation text", "Occupation classifiers leak gender bias even without explicit gender features", "Methodology adapted for our bias-probing audit on resume embeddings"],
@@ -264,7 +280,7 @@ const literatureSection = [
     "of a full model's accuracy at a fraction of the compute, which is why our SBERT encoder fine-tunes a " +
     "small pretrained MiniLM checkpoint rather than a full-size model. Kim [3] showed that multiple 1D " +
     "convolution kernels of different widths over word embeddings can match deeper networks on sentence " +
-    "classification, which directly informed the three-kernel (3, 4, 5) design of our 1D-CNN encoder."
+    "classification, which directly informed the three-kernel (3, 5, 7) design of our 1D-CNN encoder."
   ),
   para(
     "On the fairness side, De-Arteaga et al. [6] demonstrated in their “Bias in Bios” study that " +
@@ -289,21 +305,22 @@ const datasetSection = [
     "LinkedIn job postings, and a resume-vs-JD matching dataset) as the source of resume–JD pairs. " +
     "Kaggle API credentials were not available in the development environment used for this interim " +
     "pass, so a smaller, self-contained synthetic dataset was generated locally with the same shape and " +
-    "task: 150 synthetic resumes and 150 synthetic job descriptions across 6 job categories " +
+    "task: 360 synthetic resumes and 360 synthetic job descriptions across 6 job categories " +
     "(Information Technology, Human Resources, Sales, Healthcare, Engineering, Finance), each built from " +
     "a hand-written pool of 12–15 category skills plus 10 cross-cutting generic skills (communication, " +
     "project management, leadership, etc.) shared across all categories. The generic skills were added " +
     "deliberately so the matching task could not be solved by trivially detecting which disjoint " +
     "category-specific vocabulary a document uses — an early version of the dataset without them let a " +
     "bag-of-words baseline reach 100% validation accuracy, which would not have exercised any real " +
-    "difference between the four architectures."
+    "difference between the four architectures. Generated text deliberately never states the category " +
+    "name itself (see the note on the front page) — only the skills a document happens to mention."
   ),
   para(
-    "1,200 resume–JD pairs were built: same-category pairs received a graded similarity label of " +
+    "4,320 resume–JD pairs were built: same-category pairs received a graded similarity label of " +
     "0.45–0.95 scaled by actual skill overlap plus small random jitter, and cross-category pairs " +
     "received a label of 0.07–0.60 scaled the same way, so some cross-category pairs with coincidental " +
     "skill overlap (e.g. shared generic skills) score higher than some weak same-category pairs. Pairs " +
-    "were split 70/15/15 into train/validation/test (840/180/180). This mirrors the real datasets' " +
+    "were split 70/15/15 into train/validation/test (3,024/648/648). This mirrors the real datasets' " +
     "category structure and the graded-fit-score supervision described in the synopsis, at a scale that " +
     "fits the compute and time available for this interim pass; it is documented here as an explicit " +
     "stand-in, not a substitute for running the full pipeline on the real Kaggle sources before final " +
@@ -362,8 +379,8 @@ function modelSection(letter, title, key, description, figPrefix) {
 const statusRows = [
   ["Model", "Owner (Member)", "Status", "Val Accuracy", "Val AUC", "Notes"],
   ["MLP", "Unmesh Vardhan", "Trained & validated (synthetic data)", pct(metrics.mlp.val_accuracy), fmtAuc(metrics.mlp.val_auc), `${metrics.mlp.epochs_run} epochs; bag-of-averaged-embeddings baseline, no sequence modelling`],
-  ["1D-CNN", "ShanmugSrinivas", "Trained & validated (synthetic data)", pct(metrics.cnn.val_accuracy), fmtAuc(metrics.cnn.val_auc), `${metrics.cnn.epochs_run} epochs; multi-kernel (3,4,5) architecture, batch-normalized`],
-  ["BiLSTM", "Tanmay Sharma", "Trained & validated (synthetic data)", pct(metrics.bilstm.val_accuracy), fmtAuc(metrics.bilstm.val_auc), `${metrics.bilstm.epochs_run} epochs; bidirectional recurrent model, mean-pooled over timesteps`],
+  ["1D-CNN", "ShanmugSrinivas", "Trained & validated (synthetic data)", pct(metrics.cnn.val_accuracy), fmtAuc(metrics.cnn.val_auc), `${metrics.cnn.epochs_run} epochs; multi-kernel (3,5,7), warm-started frozen embeddings`],
+  ["BiLSTM", "Tanmay Sharma", "Trained & validated (synthetic data)", pct(metrics.bilstm.val_accuracy), fmtAuc(metrics.bilstm.val_auc), `${metrics.bilstm.epochs_run} epochs; mean-pooled over timesteps, warm-started frozen embeddings`],
   ["SBERT", "Unmesh Vardhan", "Trained & validated (synthetic data)", pct(metrics.sbert.val_accuracy), fmtAuc(metrics.sbert.val_auc), `${metrics.sbert.epochs_run} epochs; fine-tuned all-MiniLM-L6-v2 pretrained Transformer`],
 ];
 
@@ -392,20 +409,28 @@ const modelsSection = [
     "embeddings, 0.4 before the final layer). This establishes the baseline achievable without any " +
     "sequence modelling.", "2"),
   ...modelSection("B", "1D Convolutional Neural Network (1D-CNN)", "cnn",
-    "Following Kim (2014), three parallel Conv1d branches with kernel sizes 3, 4, and 5 (64 filters " +
-    "each, 'same' padding) scan the embedded token sequence as bigram/trigram/four-gram detectors. " +
-    "Padding positions are masked to −∞ before max-pooling so they cannot be selected as the strongest " +
-    "activation, and each branch is batch-normalized before its ReLU — both were necessary fixes after an " +
-    "initial version collapsed to predicting a near-constant similarity regardless of input, a known " +
-    "failure mode for small-data Siamese CNNs without normalization. The three 64-dim pooled vectors are " +
-    "concatenated, passed through Dense(64, ReLU) and LayerNorm, with dropout at 0.3/0.4/0.3.", "3"),
+    "Following Kim (2014), three parallel Conv1d branches with kernel sizes 3, 5, and 7 (64 filters " +
+    "each, 'same' padding) scan the embedded token sequence as bigram/four-gram/six-gram detectors, with " +
+    "padding positions masked to −∞ before max-pooling so they cannot be selected as the strongest " +
+    "activation. On the leak-free dataset (Section 2), this encoder reliably fell into “Siamese " +
+    "collapse” — predicting a near-constant similarity for every input regardless of content, a known " +
+    "failure mode when a Siamese network is trained by plain MSE regression without any contrastive " +
+    "pressure. Three fixes resolved it: (1) the embedding layer is warm-started from the already-trained " +
+    "MLP's embeddings and then frozen, so the conv layers learn on top of a stable, already-meaningful " +
+    "token representation instead of co-adapting with it into a degenerate solution; (2) convolution " +
+    "weights are initialized at a smaller scale (Kaiming init × 0.3) than PyTorch's default, which was " +
+    "otherwise too large for this embed_dim→filter fan-in and encouraged the collapse; (3) checkpoint " +
+    "selection tracks validation AUC rather than validation MSE loss, since the two diverge once the model " +
+    "becomes more confident on borderline cases. The three pooled vectors are concatenated, passed through " +
+    "Dense(64, ReLU) and LayerNorm, with light dropout (0.1) throughout.", "3"),
   ...modelSection("C", "Bidirectional LSTM (BiLSTM)", "bilstm",
     "A single Bidirectional LSTM(64) layer reads the embedded sequence in both directions " +
-    "(mask_zero via packed sequences so padding is ignored). Rather than using only the final hidden " +
-    "state — an initial version that bottlenecked badly and also collapsed on this small dataset — the " +
-    "encoder mean-pools the LSTM's per-timestep outputs over the real tokens, giving a more robust " +
-    "128-dim (64 forward + 64 backward) document vector that is then passed through Dense(64, ReLU) and " +
-    "LayerNorm.", "4"),
+    "(packed sequences so padding is ignored), mean-pooling the per-timestep outputs over the real " +
+    "tokens rather than using only the final hidden state, which bottlenecked badly in an earlier pass. " +
+    "Like the 1D-CNN, this encoder also benefits from the same embedding warm-start (from the trained " +
+    "MLP, then frozen) and AUC-based checkpoint selection described above — without them it was prone to " +
+    "the same near-constant-output collapse. The resulting 128-dim (64 forward + 64 backward) document " +
+    "vector is passed through Dense(64, ReLU) and LayerNorm.", "4"),
   ...modelSection("D", "Fine-tuned SBERT (all-MiniLM-L6-v2)", "sbert",
     "The SBERT encoder wraps a pretrained sentence-transformers/all-MiniLM-L6-v2 checkpoint (6-layer " +
     "MiniLM, mean-pooled token embeddings) and fine-tunes all parameters end-to-end with AdamW " +
@@ -418,17 +443,21 @@ const modelsSection = [
   statusTable(),
   new Paragraph({ text: "", spacing: { after: 200 } }),
   para(
-    "SBERT achieves the best validation AUC (0.9769) and accuracy (93.3%), consistent with the advantage " +
-    "pretrained language representations typically bring over models trained from scratch on a few " +
-    "hundred documents. The MLP and BiLSTM baselines perform close behind (AUC 0.9526 and 0.9575), " +
-    "suggesting that on this short, keyword-dense synthetic task, a well-regularized averaging or " +
-    "mean-pooling encoder captures most of the useful signal. The 1D-CNN trails the other three " +
-    "(AUC 0.8367) even after fixing its initial training collapse; our working hypothesis is that " +
-    "local n-gram detection is less useful than holistic averaging/pooling when category membership and " +
-    "fit are driven mostly by which skills are present anywhere in the document, rather than by local " +
-    "phrase patterns — this is exactly the kind of architecture-driven difference Objective 2 of the " +
-    "synopsis asks us to analyse, and it will be examined further with the real datasets at final " +
-    "evaluation."
+    `SBERT achieves the best validation AUC (${fmtAuc(metrics.sbert.val_auc)}) and accuracy ` +
+    `(${pct(metrics.sbert.val_accuracy)}), consistent with the advantage pretrained language ` +
+    "representations typically bring over models trained from scratch on a few hundred documents. On " +
+    "this pass, MLP, 1D-CNN, and BiLSTM all land within about two accuracy points of each other " +
+    `(${pct(metrics.mlp.val_accuracy)} / ${pct(metrics.cnn.val_accuracy)} / ` +
+    `${pct(metrics.bilstm.val_accuracy)}) and within 0.01 AUC — once the training-stability fixes in ` +
+    "their descriptions above were in place. That is a different, and more honest, picture than an " +
+    "earlier pass at a smaller data scale, where the CNN visibly trailed the others (68.9% accuracy); " +
+    "with more data and the embedding warm-start/AUC-selection fixes, that gap closed almost entirely, " +
+    "pointing to optimization stability — not architectural capacity — as the dominant factor separating " +
+    "these three encoders on this task so far. Whether a genuine architecture-driven gap reappears is " +
+    "exactly the kind of question Objective 2 of the synopsis asks us to analyse, and it needs the real " +
+    "Kaggle-scale data (Section 7) to answer properly: a synthetic, template-generated dataset this size " +
+    "may simply not be hard or varied enough to separate these architectures once each is trained " +
+    "correctly."
   ),
 ];
 
@@ -492,12 +521,26 @@ const biasSection = [
     `${pct(biasReport.leakage_gap)}. ${biasReport.interpretation}`
   ),
   para(
-    "This result directly addresses Objective 4 of the synopsis: even though the matching model never " +
-    "received gender or name as a feature, the resume embedding space still carries enough information " +
-    "for a simple linear probe to recover the proxy group well above chance. The adversarial debiasing " +
-    "extension (gradient-reversal training to suppress this leakage while preserving matching accuracy) " +
-    "is the natural next step and is scheduled as remaining work below, consistent with the synopsis's " +
-    "own timeline, which places it after the interim-report milestone."
+    "This is a different finding from an earlier pass on the smaller, 150-resume version of this " +
+    "dataset, which found a large, clear leakage gap (82.2% probe accuracy vs. a 55.6% majority " +
+    "baseline). We are reporting the current, larger-sample result rather than the earlier one because " +
+    "it is more statistically trustworthy — the earlier probe's test split held only 45 resumes, where " +
+    "a single probing classifier can easily latch onto sampling noise; at 360 resumes (108 in the test " +
+    "split) that risk is much lower. We are not quietly dropping the earlier number: the discrepancy " +
+    "itself is worth flagging as a methodological lesson — a bias audit run on a small sample can " +
+    "produce a confident-looking but unstable result, and sample size deserves as much attention as the " +
+    "headline leakage metric itself. Re-running this probe again at the real Kaggle-data scale (Section " +
+    "7) is needed before drawing a firm conclusion either way."
+  ),
+  para(
+    "Objective 4 of the synopsis asks whether the matching model's embedding space leaks demographic-" +
+    "proxy information even without an explicit demographic input. On the current evidence, we cannot " +
+    "confirm that it does; the adversarial debiasing extension (gradient-reversal training to suppress " +
+    "any such leakage while preserving matching accuracy) remains worth implementing regardless, both " +
+    "because it is required by the synopsis and because a null result here on synthetic data does not " +
+    "guarantee a null result on the real, less-controlled resume text. It is scheduled as remaining work " +
+    "below, consistent with the synopsis's own timeline, which places it after the interim-report " +
+    "milestone."
   ),
 ];
 
@@ -506,19 +549,23 @@ const biasSection = [
 const contribRows = [
   ["Member Name", "Reg. No.", "Task(s) Completed"],
   ["Unmesh Vardhan", "230911030",
-    "Built and fine-tuned the SBERT (MiniLM) notebook; set up AdamW fine-tuning; ran validation " +
-    "evaluation (93.33% acc, AUC 0.9769); built the MLP baseline notebook and shared tokenizer/vocab " +
-    "pipeline; ran the bias-probing audit on the best encoder; coordinated the project structure and " +
-    "compiled this interim report"],
+    `Built and fine-tuned the SBERT (MiniLM) notebook; set up AdamW fine-tuning; ran validation ` +
+    `evaluation (${pct(metrics.sbert.val_accuracy)} acc, AUC ${fmtAuc(metrics.sbert.val_auc)}); built the ` +
+    "MLP baseline notebook and shared tokenizer/vocab pipeline (later reused as the warm-start source " +
+    "for CNN/BiLSTM embeddings); diagnosed the category-name text leak and the Siamese-collapse training " +
+    "failure, scaled the dataset up and re-ran the full pipeline; ran the bias-probing audit on the best " +
+    "encoder; coordinated the project structure and compiled this interim report"],
   ["ShanmugSrinivas", "230911394",
-    "Built and trained the 1D-CNN notebook with three parallel kernel branches (3, 4, 5); diagnosed and " +
-    "fixed an initial training collapse by adding padding-aware masked pooling and batch normalization; " +
-    "ran validation evaluation (68.89% acc, AUC 0.8367); generated confusion matrix and ROC plots"],
+    `Built and trained the 1D-CNN notebook with three parallel kernel branches (3, 5, 7); diagnosed and ` +
+    "fixed a Siamese-collapse training failure via embedding warm-start/freeze, smaller conv weight " +
+    `init, and AUC-based checkpoint selection; ran validation evaluation (${pct(metrics.cnn.val_accuracy)} ` +
+    `acc, AUC ${fmtAuc(metrics.cnn.val_auc)}); generated confusion matrix and ROC plots`],
   ["Tanmay Sharma", "230911294",
     "Built and trained the BiLSTM notebook; diagnosed and fixed a final-hidden-state bottleneck by " +
-    "switching to masked mean-pooling over all timesteps; ran validation evaluation (90.00% acc, " +
-    "AUC 0.9575); produced training-curve and evaluation plots; built the explainability (matched/missing " +
-    "skill) layer"],
+    "switching to masked mean-pooling over all timesteps, then the same Siamese-collapse failure as the " +
+    `CNN via embedding warm-start and AUC-based checkpoint selection; ran validation evaluation ` +
+    `(${pct(metrics.bilstm.val_accuracy)} acc, AUC ${fmtAuc(metrics.bilstm.val_auc)}); produced ` +
+    "training-curve and evaluation plots; built the explainability (matched/missing skill) layer"],
 ];
 
 function contribTable() {
@@ -570,14 +617,19 @@ const riskSection = [
   heading("7. Risk / Plan for Remaining Work", HeadingLevel.HEADING_1),
   para(
     "All four models are implemented, trained, and validated on the synthetic dataset described in " +
-    "Section 2, together with the explainability and bias-probe layers. The main remaining risk is " +
+    "Section 2 (now scaled to 4,320 pairs and confirmed free of the category-name text leak described on " +
+    "the front page), together with the explainability and bias-probe layers. The main remaining risk is " +
     "dataset fidelity: results on the synthetic stand-in dataset may not transfer exactly to the real " +
     "Kaggle sources once a token is obtained, since real resumes/JDs are noisier and less template-driven. " +
     "We plan to re-run the identical pipeline (unchanged code, same evaluation protocol) on the real data " +
     "before final evaluation, and to report both sets of numbers if they diverge meaningfully. The " +
-    "1D-CNN's training-collapse and BiLSTM's bottleneck issues encountered during this pass (documented " +
-    "in Section 3) are now fixed in code, but we will watch for similar instability re-emerging at the " +
-    "larger, noisier real-data scale."
+    "1D-CNN and BiLSTM Siamese-collapse failures encountered during this pass (documented in Section 3) " +
+    "are fixed via embedding warm-start/freeze and AUC-based checkpoint selection, but given how sensitive " +
+    "this turned out to be to random initialization and dataset scale, we will watch closely for similar " +
+    "instability re-emerging at the larger, noisier real-data scale rather than assuming the fix " +
+    "generalizes automatically. The bias-probe finding (Section 5) also needs to be re-run on the real " +
+    "data before drawing conclusions, given how much it moved between the 150- and 360-resume synthetic " +
+    "runs."
   ),
   remainingTable(),
 ];

@@ -31,10 +31,13 @@ DATA_DIR = ROOT / "data"
 RESULTS_DIR = ROOT / "results"
 
 LABEL_THRESHOLD = 0.5  # binarize graded similarity label -> match / no-match
-MAX_EPOCHS = 35
-PATIENCE = 5
+MAX_EPOCHS = 60
+PATIENCE = 15
 BATCH_SIZE = 32
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+torch.manual_seed(42)
+np.random.seed(42)
 
 
 def load_pairs():
@@ -77,6 +80,7 @@ def run_epoch_token_model(model, rows, optimizer, vocab, train=True):
             if train:
                 optimizer.zero_grad()
                 loss.backward()
+                torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
                 optimizer.step()
             total_loss += loss.item()
             n_batches += 1
@@ -101,6 +105,7 @@ def run_epoch_sbert(model, rows, optimizer, train=True):
             if train:
                 optimizer.zero_grad()
                 loss.backward()
+                torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
                 optimizer.step()
             total_loss += loss.item()
             n_batches += 1
@@ -182,14 +187,31 @@ def train_token_model(model_key, model_label, build_model, lr):
     vocab.save(DATA_DIR / "vocab.json")
 
     model = build_model(len(vocab)).to(DEVICE)
+
+    # Warm-start the embedding layer from the already-trained MLP's embeddings
+    # (if available) instead of random init. The CNN and BiLSTM encoders are
+    # prone to "Siamese collapse" (predicting a near-constant similarity
+    # regardless of input) when trained from scratch via plain MSE regression
+    # without contrastive pressure; MLP's mean-pooling encoder reliably
+    # avoids this and learns a solid token embedding space, so reusing it
+    # gives the other encoders a much better starting point.
+    pretrained_embed_path = DATA_DIR / "pretrained_embedding.pt"
+    if model_key != "mlp" and pretrained_embed_path.exists():
+        pretrained = torch.load(pretrained_embed_path)
+        if pretrained.shape == model.embedding.weight.shape:
+            model.embedding.weight.data.copy_(pretrained)
+            model.embedding.weight.requires_grad = False
+            print(f"[{model_label}] warm-started + froze embeddings from trained MLP")
+
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
-    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode="min", factor=0.5, patience=1)
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode="min", factor=0.5, patience=4)
 
     out_dir = RESULTS_DIR / model_key
     out_dir.mkdir(parents=True, exist_ok=True)
 
     train_losses, val_losses, val_accs = [], [], []
     best_val_loss = float("inf")
+    best_val_auc = -1.0
     best_state = None
     best_epoch = 0
     epochs_without_improve = 0
@@ -206,9 +228,15 @@ def train_token_model(model_key, model_label, build_model, lr):
         val_accs.append(acc)
         scheduler.step(val_loss)
 
-        improved = val_loss < best_val_loss - 1e-5
+        # Model selection tracks val AUC rather than val MSE loss: on this
+        # objective the two sometimes diverge (a model can become more
+        # confident/polarized, raising MSE on borderline cases while still
+        # classifying more pairs correctly), and AUC is what we actually
+        # report and care about.
+        improved = auc > best_val_auc + 1e-5
         if improved:
             best_val_loss = val_loss
+            best_val_auc = auc
             best_epoch = epoch
             best_state = {k: v.clone() for k, v in model.state_dict().items()}
             best_metrics = (acc, prec, rec, f1, auc, bin_labels, bin_preds, val_preds)
@@ -245,6 +273,8 @@ def train_token_model(model_key, model_label, build_model, lr):
     }
     (out_dir / "metrics.json").write_text(json.dumps(metrics, indent=2), encoding="utf-8")
     torch.save(model.state_dict(), out_dir / "model.pt")
+    if model_key == "mlp":
+        torch.save(model.embedding.weight.data.clone(), DATA_DIR / "pretrained_embedding.pt")
     print(json.dumps(metrics, indent=2))
 
 
@@ -260,6 +290,7 @@ def train_sbert_model():
 
     train_losses, val_losses, val_accs = [], [], []
     best_val_loss = float("inf")
+    best_val_auc = -1.0
     best_state = None
     best_epoch = 0
     epochs_without_improve = 0
@@ -278,9 +309,10 @@ def train_sbert_model():
         val_losses.append(val_loss)
         val_accs.append(acc)
 
-        improved = val_loss < best_val_loss - 1e-5
+        improved = auc > best_val_auc + 1e-5
         if improved:
             best_val_loss = val_loss
+            best_val_auc = auc
             best_epoch = epoch
             best_state = {k: v.clone() for k, v in model.state_dict().items()}
             best_metrics = (acc, prec, rec, f1, auc, bin_labels, bin_preds, val_preds)

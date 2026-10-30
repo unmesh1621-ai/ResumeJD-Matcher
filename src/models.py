@@ -45,16 +45,24 @@ class SiameseCNN(nn.Module):
     def __init__(self, vocab_size, embed_dim=128, num_filters=64, pad_id=0):
         super().__init__()
         self.embedding = nn.Embedding(vocab_size, embed_dim, padding_idx=pad_id)
-        self.dropout_in = nn.Dropout(0.3)
+        self.dropout_in = nn.Dropout(0.1)
         self.convs = nn.ModuleList([
             nn.Conv1d(embed_dim, num_filters, kernel_size=k, padding="same")
-            for k in (3, 4, 5)
+            for k in (3, 5, 7)
         ])
-        self.bns = nn.ModuleList([nn.BatchNorm1d(num_filters) for _ in range(3)])
-        self.dropout_mid = nn.Dropout(0.4)
+        for conv in self.convs:
+            # Default PyTorch Conv1d init is too large for this embed_dim
+            # (128) -> num_filters (64) fan-in and tends to land the model
+            # in a degenerate "constant output" basin on this task; a
+            # smaller init gives gradients enough room to actually
+            # differentiate between inputs early in training.
+            nn.init.kaiming_normal_(conv.weight, nonlinearity="relu")
+            conv.weight.data.mul_(0.3)
+            nn.init.zeros_(conv.bias)
+        self.dropout_mid = nn.Dropout(0.1)
         self.fc1 = nn.Linear(num_filters * 3, 64)
         self.out_norm = nn.LayerNorm(64)
-        self.dropout_out = nn.Dropout(0.3)
+        self.dropout_out = nn.Dropout(0.1)
         self.pad_id = pad_id
 
     def encode(self, x):
@@ -63,9 +71,8 @@ class SiameseCNN(nn.Module):
         emb = self.dropout_in(emb)
         emb = emb.transpose(1, 2)  # (batch, embed_dim, seq_len)
         pooled = []
-        for conv, bn in zip(self.convs, self.bns):
-            c = bn(conv(emb))
-            c = F.relu(c)  # (batch, filters, seq_len)
+        for conv in self.convs:
+            c = F.relu(conv(emb))  # (batch, filters, seq_len)
             c = c.masked_fill(pad_mask, float("-inf"))
             p = c.max(dim=2).values
             pooled.append(p)
