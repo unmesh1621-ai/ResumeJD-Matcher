@@ -1,0 +1,207 @@
+category,skill,aliases
+Programming,python,
+Programming,java,
+Programming,javascript,js
+Programming,typescript,
+Programming,c++,cpp
+Programming,c#,csharp
+Programming,golang,
+Programming,rust,
+Programming,ruby,
+Programming,php,
+Programming,scala,
+Programming,kotlin,
+Programming,swift,
+Programming,r programming,rstudio
+Programming,matlab,
+Programming,sql,
+Programming,bash,shell scripting
+Programming,perl,
+Web,html,
+Web,css,
+Web,react,reactjs|react.js
+Web,angular,angularjs
+Web,vue,vuejs|vue.js
+Web,node.js,nodejs
+Web,django,
+Web,flask,
+Web,spring boot,
+Web,.net,dotnet|asp.net
+Web,rest api,restful|rest apis|restful api
+Web,graphql,
+Web,microservices,
+Data,machine learning,ml
+Data,deep learning,
+Data,data analysis,data analytics
+Data,data science,
+Data,statistics,statistical analysis
+Data,pandas,
+Data,numpy,
+Data,scikit-learn,sklearn
+Data,tensorflow,
+Data,pytorch,
+Data,nlp,natural language processing
+Data,computer vision,
+Data,tableau,
+Data,power bi,powerbi
+Data,excel,microsoft excel|ms excel
+Data,spark,apache spark|pyspark
+Data,hadoop,
+Data,etl,
+Data,data warehousing,data warehouse
+Data,data modeling,data modelling
+Data,big data,
+Data,airflow,
+Data,snowflake,
+Data,databricks,
+Data,looker,
+Database,mysql,
+Database,postgresql,postgres
+Database,oracle,
+Database,sql server,mssql
+Database,mongodb,
+Database,redis,
+Database,cassandra,
+Database,dynamodb,
+Database,elasticsearch,
+Cloud,aws,amazon web services
+Cloud,azure,microsoft azure
+Cloud,gcp,google cloud
+Cloud,docker,
+Cloud,kubernetes,k8s
+Cloud,terraform,
+Cloud,ansible,
+Cloud,jenkins,
+Cloud,ci/cd,ci cd|continuous integration
+Cloud,devops,
+Cloud,linux,unix
+Cloud,git,github|gitlab
+Cloud,networking,
+Cloud,cloud computing,
+Security,cybersecurity,cyber security|information security
+Security,penetration testing,
+Security,firewall,firewalls
+Security,siem,
+Security,vulnerability assessment,
+Security,identity and access management,iam
+Engineering,autocad,
+Engineering,solidworks,
+Engineering,cad,
+Engineering,six sigma,lean six sigma
+Engineering,lean manufacturing,
+Engineering,quality assurance,qa
+Engineering,quality control,
+Engineering,testing,software testing
+Engineering,selenium,
+Engineering,automation,
+Engineering,embedded systems,
+Engineering,plc,
+Engineering,troubleshooting,
+Engineering,technical documentation,
+Engineering,manufacturing,
+Engineering,maintenance,
+Engineering,electrical,
+Engineering,mechanical,
+Management,project management,
+Management,program management,
+Management,product management,
+Management,agile,
+Management,scrum,
+Management,jira,
+Management,stakeholder management,stakeholders
+Management,team leadership,leadership
+Management,strategic planning,
+Management,budgeting,budget management
+Management,risk management,
+Management,change management,
+Management,vendor management,
+Management,operations management,
+Management,process improvement,
+Management,supervision,staff supervision
+Management,pmp,
+Business,business analysis,business analyst
+Business,requirements gathering,requirements analysis
+Business,business development,
+Business,market research,
+Business,forecasting,
+Business,reporting,
+Business,erp,
+Business,sap,
+Business,salesforce,
+Business,crm,
+Business,microsoft office,ms office|office 365
+Business,powerpoint,
+Business,consulting,
+Finance,accounting,
+Finance,financial analysis,
+Finance,financial modeling,financial modelling
+Finance,financial reporting,
+Finance,auditing,audit
+Finance,accounts payable,
+Finance,accounts receivable,
+Finance,bookkeeping,
+Finance,payroll,
+Finance,tax,taxation
+Finance,gaap,
+Finance,reconciliation,account reconciliation
+Finance,quickbooks,
+Finance,banking,
+Finance,compliance,
+Finance,cpa,
+Sales,sales,
+Sales,customer service,
+Sales,customer relationship management,
+Sales,account management,
+Sales,lead generation,
+Sales,negotiation,
+Sales,retail,
+Sales,merchandising,
+Sales,cold calling,
+Sales,b2b,
+Marketing,marketing,
+Marketing,digital marketing,
+Marketing,seo,search engine optimization
+Marketing,social media,social media marketing
+Marketing,content marketing,
+Marketing,email marketing,
+Marketing,google analytics,
+Marketing,branding,brand management
+Marketing,public relations,
+Marketing,advertising,
+Design,adobe photoshop,photoshop
+Design,adobe illustrator,illustrator
+Design,graphic design,
+Design,ui/ux,ux|ui design|user experience
+Design,figma,
+HR,recruiting,recruitment|talent acquisition
+HR,onboarding,
+HR,employee relations,
+HR,performance management,
+HR,training and development,
+HR,benefits administration,
+HR,hris,
+HR,compensation,
+Healthcare,patient care,
+Healthcare,nursing,
+Healthcare,clinical,
+Healthcare,hipaa,
+Healthcare,electronic medical records,emr|ehr
+Healthcare,medical terminology,
+Healthcare,cpr,
+Healthcare,pharmacy,
+Soft,communication,communication skills
+Soft,problem solving,problem-solving
+Soft,teamwork,team player
+Soft,time management,
+Soft,critical thinking,
+Soft,attention to detail,detail oriented|detail-oriented
+Soft,presentation,presentations|public speaking
+Soft,multitasking,
+Soft,mentoring,
+Soft,bilingual,
+Logistics,supply chain,supply chain management
+Logistics,logistics,
+Logistics,inventory management,
+Logistics,procurement,purchasing
+Logistics,warehouse,
+Logistics,scheduling,
