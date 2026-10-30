@@ -200,12 +200,29 @@ def precision_at_k(rows, preds, ks=(1, 3, 5)):
     return out
 
 
+def within_resume_auc(rows, preds):
+    """Mean ROC-AUC computed separately for each resume over the JDs it is
+    paired with (only resumes that have both a matching and a non-matching
+    JD). A model that scores resumes by a JD-independent 'resume quality'
+    prior gets exactly 0.5 here, so this isolates genuine resume<->JD
+    matching ability."""
+    by_resume = {}
+    for row, p in zip(rows, preds):
+        by_resume.setdefault(row["resume_id"], ([], []))
+        by_resume[row["resume_id"]][0].append(int(row["similarity_label"] >= LABEL_THRESHOLD))
+        by_resume[row["resume_id"]][1].append(p)
+    aucs = [roc_auc_score(y, s) for y, s in by_resume.values() if 0 < sum(y) < len(y)]
+    return (float(np.mean(aucs)) if aucs else float("nan")), len(aucs)
+
+
 def test_metrics(rows, preds, labels, threshold):
     acc, prec, rec, f1, auc, bin_labels, bin_preds = binary_metrics(preds, labels, threshold)
     rho = spearmanr(preds, labels).correlation
+    wr_auc, wr_n = within_resume_auc(rows, preds)
     out = {
         "test_accuracy": acc, "test_precision": prec, "test_recall": rec,
         "test_f1": f1, "test_auc": auc, "test_spearman": float(rho),
+        "test_within_resume_auc": wr_auc, "test_within_resume_auc_n_resumes": wr_n,
         "test_mse": float(np.mean((preds - labels) ** 2)),
     }
     out.update({f"test_{k}": v for k, v in precision_at_k(rows, preds).items()})
@@ -324,6 +341,7 @@ def finalize(out_dir, model_key, model_label, rows, history, best, test_preds, t
         "decision_threshold": threshold,
         "val_accuracy": val_acc, "val_precision": val_prec, "val_recall": val_rec,
         "val_f1": val_f1, "val_auc": val_auc,
+        "val_within_resume_auc": within_resume_auc(rows["val"], best["val_preds"])[0],
         **tm,
         "train_seconds": elapsed,
         "device": str(DEVICE),
@@ -342,7 +360,8 @@ def finalize(out_dir, model_key, model_label, rows, history, best, test_preds, t
     return metrics
 
 
-def train_token_model(model_key, model_label, build_model, lr, data, seed, warm_start=True):
+def train_token_model(model_key, model_label, build_model, lr, data, seed, head, out_name,
+                      warm_start=True):
     cfg = DATA_CONFIG[data]
     preprocessing.MAX_LEN = cfg["max_len"]
     set_seed(seed)
@@ -377,7 +396,7 @@ def train_token_model(model_key, model_label, build_model, lr, data, seed, warm_
     optimizer = torch.optim.Adam([p for p in model.parameters() if p.requires_grad], lr=lr)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode="min", factor=0.5, patience=3)
 
-    out_dir = results_dir / model_key
+    out_dir = results_dir / out_name
     out_dir.mkdir(parents=True, exist_ok=True)
     n_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
 
@@ -399,7 +418,7 @@ def train_token_model(model_key, model_label, build_model, lr, data, seed, warm_
 
     metrics = finalize(out_dir, model_key, model_label, rows, (tl, vl, va), best,
                        test_preds, test_labels, n_params, elapsed, seed,
-                       extra={"max_len": cfg["max_len"], "vocab_size": len(vocab),
+                       extra={"head": head, "max_len": cfg["max_len"], "vocab_size": len(vocab),
                               "embedding_warm_started_from_mlp": warm_started})
     if seed == MAIN_SEED:
         torch.save(model.state_dict(), out_dir / "model.pt")
@@ -408,48 +427,57 @@ def train_token_model(model_key, model_label, build_model, lr, data, seed, warm_
     return metrics
 
 
-def train_sbert_model(data, seed, epochs=None, lr=2e-5):
-    from models import SiameseSBERT
+def train_sbert_model(data, seed, head, out_name, backbone="minilm", epochs=None, lr=2e-5):
+    from models import SiameseSBERT, SBERT_BACKBONES
 
     cfg = DATA_CONFIG[data]
     set_seed(seed)
     rows = load_pairs(data)
-    model = SiameseSBERT(max_len=cfg["sbert_max_len"]).to(DEVICE)
-    optimizer = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=0.01)
+    model = SiameseSBERT(SBERT_BACKBONES[backbone], max_len=cfg["sbert_max_len"], head=head).to(DEVICE)
+    batch_size = 16
+    if backbone == "mpnet":
+        # 12-layer 768-d model at 512 tokens: trade compute for memory to fit 8 GB
+        model.backbone.gradient_checkpointing_enable()
+        batch_size = 8
+    # the interaction head starts from random init, so it gets a larger lr
+    head_params = list(model.head.parameters()) if model.head is not None else []
+    optimizer = torch.optim.AdamW([
+        {"params": model.backbone.parameters(), "lr": lr, "weight_decay": 0.01},
+        {"params": head_params, "lr": 1e-3, "weight_decay": 0.01},
+    ])
     scaler = torch.amp.GradScaler(enabled=DEVICE.type == "cuda")
 
-    out_dir = RESULTS_ROOT / data / "sbert"
+    out_dir = RESULTS_ROOT / data / out_name
     out_dir.mkdir(parents=True, exist_ok=True)
     n_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    label = f"SBERT ({'MPNet' if backbone == 'mpnet' else 'MiniLM'}, {head})"
 
     def train_step():
-        loss, _, _ = run_epoch_sbert(model, rows["train"], optimizer, scaler, train=True)
+        loss, _, _ = run_epoch_sbert(model, rows["train"], optimizer, scaler, train=True,
+                                     batch_size=batch_size)
         return loss
 
     def eval_step():
         loss, preds, labels = run_epoch_sbert(model, rows["val"], optimizer, scaler,
-                                              train=False, batch_size=64)
+                                              train=False, batch_size=32)
         return loss, preds, labels, lambda: {k: v.detach().clone() for k, v in model.state_dict().items()}
 
-    # Zero-shot baseline: the pretrained checkpoint before any fine-tuning.
-    _, zs_preds, zs_labels = run_epoch_sbert(model, rows["test"], optimizer, scaler, train=False, batch_size=64)
-    zero_shot_auc = binary_metrics(zs_preds, zs_labels)[4]
-    print(f"[SBERT] zero-shot (pretrained, not fine-tuned) test AUC = {zero_shot_auc:.4f}")
-
     t0 = time.time()
-    tl, vl, va, best = fit_loop("SBERT", train_step, eval_step, epochs or 6, 2)
+    tl, vl, va, best = fit_loop(label, train_step, eval_step, epochs or 6, 2)
     elapsed = time.time() - t0
 
     model.load_state_dict(best["state"])
     _, test_preds, test_labels = run_epoch_sbert(model, rows["test"], optimizer, scaler,
-                                                 train=False, batch_size=64)
-    metrics = finalize(out_dir, "sbert", "SBERT (MiniLM, fine-tuned)", rows, (tl, vl, va), best,
+                                                 train=False, batch_size=32)
+    metrics = finalize(out_dir, "sbert", label, rows, (tl, vl, va), best,
                        test_preds, test_labels, n_params, elapsed, seed,
-                       extra={"max_len": cfg["sbert_max_len"], "lr": lr,
-                              "zero_shot_test_auc": zero_shot_auc})
+                       extra={"head": head, "backbone": SBERT_BACKBONES[backbone],
+                              "max_len": cfg["sbert_max_len"], "lr": lr, "batch_size": batch_size})
     if seed == MAIN_SEED:
         model.backbone.save_pretrained(out_dir / "backbone")
         model.tokenizer.save_pretrained(out_dir / "backbone")
+        if model.head is not None:
+            torch.save(model.head.state_dict(), out_dir / "head.pt")
     return metrics
 
 
@@ -458,20 +486,26 @@ def main():
     parser.add_argument("--model", required=True, choices=["mlp", "cnn", "bilstm", "sbert"])
     parser.add_argument("--data", default="real", choices=["real", "synthetic"])
     parser.add_argument("--seed", type=int, default=MAIN_SEED)
+    parser.add_argument("--head", default="interaction", choices=["interaction", "cosine"])
+    parser.add_argument("--backbone", default="minilm", choices=["minilm", "mpnet"], help="SBERT only")
+    parser.add_argument("--out", default=None,
+                        help="results subdir under results/<data>/ (default: the model name)")
     parser.add_argument("--epochs", type=int, default=None, help="SBERT max epochs")
     args = parser.parse_args()
 
     from models import SiameseMLP, SiameseCNN, SiameseBiLSTM
 
-    print(f"device: {DEVICE}")
+    out = args.out or args.model
+    h = args.head
+    print(f"device: {DEVICE}  head: {h}  out: results/{args.data}/{out}")
     if args.model == "mlp":
-        train_token_model("mlp", "MLP", lambda vs: SiameseMLP(vs), 1e-3, args.data, args.seed)
+        train_token_model("mlp", "MLP", lambda vs: SiameseMLP(vs, head=h), 1e-3, args.data, args.seed, h, out)
     elif args.model == "cnn":
-        train_token_model("cnn", "1D-CNN", lambda vs: SiameseCNN(vs), 1e-3, args.data, args.seed)
+        train_token_model("cnn", "1D-CNN", lambda vs: SiameseCNN(vs, head=h), 1e-3, args.data, args.seed, h, out)
     elif args.model == "bilstm":
-        train_token_model("bilstm", "BiLSTM", lambda vs: SiameseBiLSTM(vs), 1e-3, args.data, args.seed)
+        train_token_model("bilstm", "BiLSTM", lambda vs: SiameseBiLSTM(vs, head=h), 1e-3, args.data, args.seed, h, out)
     elif args.model == "sbert":
-        train_sbert_model(args.data, args.seed, args.epochs)
+        train_sbert_model(args.data, args.seed, h, out, args.backbone, args.epochs)
 
 
 if __name__ == "__main__":

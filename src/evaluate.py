@@ -35,9 +35,11 @@ PAIRS_FILE = {"real": "pairs_real.csv", "synthetic": "pairs.csv"}
 FIT_ORDER = ["No Fit", "Potential Fit", "Good Fit"]
 
 TABLE_METRICS = [
+    ("val_auc", "Val AUC"),
     ("test_accuracy", "Accuracy"), ("test_precision", "Precision"), ("test_recall", "Recall"),
-    ("test_f1", "F1"), ("test_auc", "ROC-AUC"), ("test_p_at_1", "P@1"), ("test_p_at_3", "P@3"),
-    ("test_p_at_5", "P@5"), ("test_p_at_3_random", "P@3 random"), ("test_spearman", "Spearman"),
+    ("test_f1", "F1"), ("test_auc", "ROC-AUC"), ("test_within_resume_auc", "Within-resume AUC"),
+    ("test_p_at_1", "P@1"), ("test_p_at_3", "P@3"), ("test_p_at_5", "P@5"),
+    ("test_p_at_3_random", "P@3 random"), ("test_spearman", "Spearman"),
 ]
 
 
@@ -47,43 +49,80 @@ def load_seed_metrics(model_dir):
 
 
 def fmt(mean, std, n):
+    if np.isnan(mean):
+        return "—"
     return f"{mean:.4f} ± {std:.4f}" if n > 1 else f"{mean:.4f}"
 
 
-def build_comparison(results_dir):
-    rows, md_rows = [], []
-    for key, label in MODELS:
-        model_dir = results_dir / key
-        if not (model_dir / "metrics.json").exists():
-            print(f"skipping {key}: no metrics.json")
-            continue
-        main = json.loads((model_dir / "metrics.json").read_text(encoding="utf-8"))
-        seeds = load_seed_metrics(model_dir) or [main]
-        row = {"model": label, "n_seeds": len(seeds),
-               "trainable_parameters": main["trainable_parameters"],
-               "train_seconds": np.mean([s["train_seconds"] for s in seeds]),
-               "best_epoch": main["best_epoch"]}
-        md = [label, str(len(seeds)), f"{main['trainable_parameters']:,}"]
-        for m, _ in TABLE_METRICS:
-            vals = np.array([s[m] for s in seeds], dtype=float)
-            row[m] = vals.mean()
-            row[m + "_std"] = vals.std()
-            md.append(fmt(vals.mean(), vals.std(), len(vals)))
-        md.append(f"{row['train_seconds']:.0f}")
-        rows.append(row)
-        md_rows.append(md)
+def summarise(model_dir, label):
+    """One table row: mean/std over seeds of every metric in TABLE_METRICS."""
+    main = json.loads((model_dir / "metrics.json").read_text(encoding="utf-8"))
+    seeds = load_seed_metrics(model_dir) or [main]
+    row = {"model": label, "dir": str(model_dir.relative_to(ROOT)), "n_seeds": len(seeds),
+           "head": main.get("head", "cosine"), "backbone": main.get("backbone", ""),
+           "trainable_parameters": main.get("trainable_parameters", 0),
+           "train_seconds": float(np.mean([s.get("train_seconds", 0.0) for s in seeds]))}
+    md = [label, str(len(seeds)), f"{row['trainable_parameters']:,}" if row["trainable_parameters"] else "—"]
+    for m, _ in TABLE_METRICS:
+        vals = np.array([s.get(m, np.nan) for s in seeds], dtype=float)
+        row[m] = float(np.nanmean(vals)) if not np.all(np.isnan(vals)) else np.nan
+        row[m + "_std"] = float(np.nanstd(vals)) if not np.all(np.isnan(vals)) else np.nan
+        md.append(fmt(row[m], row[m + "_std"], int((~np.isnan(vals)).sum())))
+    md.append(f"{row['train_seconds']:.0f}" if row["train_seconds"] else "—")
+    return row, md
 
-    df = pd.DataFrame(rows)
-    df.to_csv(results_dir / "comparison.csv", index=False)
+
+def md_table(md_rows):
     header = ["Model", "Seeds", "Params"] + [h for _, h in TABLE_METRICS] + ["Train s"]
     lines = ["| " + " | ".join(header) + " |", "|" + "---|" * len(header)]
-    lines += ["| " + " | ".join(r) + " |" for r in md_rows]
-    note = ("\nAll metrics on the held-out TEST split (JDs unseen in training). "
-            "Binary metrics use each model's validation-tuned threshold. "
-            "Mean ± std over seeds where more than one seed was run.\n")
-    (results_dir / "comparison.md").write_text("\n".join(lines) + "\n" + note, encoding="utf-8")
-    print("\n".join(lines))
-    return df
+    return lines + ["| " + " | ".join(r) + " |" for r in md_rows]
+
+
+def collect(results_dir, entries):
+    rows, md_rows = [], []
+    for model_dir, label in entries:
+        if (model_dir / "metrics.json").exists():
+            row, md = summarise(model_dir, label)
+            rows.append(row)
+            md_rows.append(md)
+    return rows, md_rows
+
+
+def variant_label(path, results_dir):
+    m = json.loads((path / "metrics.json").read_text(encoding="utf-8"))
+    return f"{m.get('model', path.name)} [{path.relative_to(results_dir).as_posix()}]"
+
+
+def build_comparison(results_dir):
+    main_rows, main_md = collect(results_dir, [(results_dir / k, l) for k, l in MODELS])
+    pd.DataFrame(main_rows).to_csv(results_dir / "comparison.csv", index=False)
+
+    # every other trained variant = ablation (head / backbone choices)
+    ablation_dirs = sorted(p.parent for p in results_dir.glob("**/metrics.json")
+                           if p.parent.name not in dict(MODELS)
+                           and "baselines" not in p.parts
+                           and not p.parent.name.startswith("sbert_control")
+                           and not p.parent.name.startswith("sbert_debiased"))
+    ablation_dirs += [results_dir / k for k, _ in MODELS if (results_dir / k / "metrics.json").exists()]
+    abl_rows, abl_md = collect(results_dir, [(d, variant_label(d, results_dir)) for d in sorted(set(ablation_dirs))])
+    pd.DataFrame(abl_rows).to_csv(results_dir / "comparison_ablations.csv", index=False)
+
+    base_dirs = sorted(p.parent for p in (results_dir / "baselines").glob("*/metrics.json"))
+    base_rows, base_md = collect(results_dir, [(d, d.name) for d in base_dirs])
+    pd.DataFrame(base_rows).to_csv(results_dir / "comparison_baselines.csv", index=False)
+
+    text = ["# Model comparison (held-out TEST split)", "",
+            "All metrics on the held-out test split (its JDs never appear in train/val). Binary metrics use "
+            "each model's validation-tuned threshold. Mean ± std over seeds where more than one seed was run. "
+            "Scorer (cosine vs. interaction head) and SBERT backbone were chosen per model on VALIDATION AUC. "
+            "Within-resume AUC = mean AUC over the JDs paired with each single resume; a model that ignores "
+            "the JD scores exactly 0.5 there.", "",
+            "## Main comparison (4 architectures)", ""] + md_table(main_md) + \
+           ["", "## Ablations (all trained variants, incl. the selected ones)", ""] + md_table(abl_md) + \
+           ["", "## Baselines (no training of a matching model)", ""] + md_table(base_md)
+    (results_dir / "comparison.md").write_text("\n".join(text) + "\n", encoding="utf-8")
+    print("\n".join(text))
+    return pd.DataFrame(main_rows)
 
 
 def load_predictions(results_dir, pairs):

@@ -97,9 +97,8 @@ def counterfactual_fairness(enc, audit, rows):
     resume_b = [inject_name(audit[r["resume_id"]]["name_b"], r["resume_text"]) for r in rows]
     jds = [r["jd_text"] for r in rows]
     jd_vecs = enc.embed(jds)
-    import torch.nn.functional as F
-    sa = F.cosine_similarity(enc.embed(resume_a), jd_vecs, dim=-1).numpy()
-    sb = F.cosine_similarity(enc.embed(resume_b), jd_vecs, dim=-1).numpy()
+    sa = enc.score_vectors(enc.embed(resume_a), jd_vecs)
+    sb = enc.score_vectors(enc.embed(resume_b), jd_vecs)
     t = enc.threshold
     true_match = np.array([float(r["similarity_label"]) >= 0.5 for r in rows])
     tpr_a = float((sa[true_match] >= t).mean())

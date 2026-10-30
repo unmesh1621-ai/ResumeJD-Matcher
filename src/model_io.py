@@ -53,10 +53,14 @@ class Encoder:
             out.append(v.float().cpu())
         return torch.cat(out)
 
+    @torch.no_grad()
+    def score_vectors(self, r, j):
+        """Fit score from precomputed embeddings, using the model's own
+        scorer (cosine or interaction head)."""
+        return self.model.score_vectors(r.to(DEVICE), j.to(DEVICE)).float().cpu().numpy()
+
     def score(self, resume_texts, jd_texts):
-        r = self.embed(resume_texts)
-        j = self.embed(jd_texts)
-        return F.cosine_similarity(r, j, dim=-1).numpy()
+        return self.score_vectors(self.embed(resume_texts), self.embed(jd_texts))
 
 
 def load_metrics(model_dir):
@@ -67,11 +71,14 @@ def load_metrics(model_dir):
 def load_encoder(key, data="real", model_dir=None):
     model_dir = Path(model_dir) if model_dir else RESULTS_ROOT / data / key
     metrics = load_metrics(model_dir)
+    head = metrics.get("head", "cosine")  # runs before the head option were cosine
     if key == "sbert":
-        model = SiameseSBERT(model_name=str(model_dir / "backbone"), max_len=metrics.get("max_len", 512))
+        model = SiameseSBERT(model_name=str(model_dir / "backbone"), max_len=metrics.get("max_len", 512), head=head)
+        if model.head is not None:
+            model.head.load_state_dict(torch.load(model_dir / "head.pt", map_location="cpu"))
         return Encoder(key, model.to(DEVICE), metrics)
     vocab = Vocab.load(RESULTS_ROOT / data / "vocab.json")
-    model = TOKEN_BUILDERS[key](len(vocab))
+    model = TOKEN_BUILDERS[key](len(vocab), head=head)
     model.load_state_dict(torch.load(model_dir / "model.pt", map_location="cpu"))
     return Encoder(key, model.to(DEVICE), metrics, vocab=vocab, max_len=metrics.get("max_len", preprocessing.MAX_LEN))
 

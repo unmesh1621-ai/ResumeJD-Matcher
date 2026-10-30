@@ -44,7 +44,7 @@ import torch.nn.functional as F
 
 sys.path.insert(0, str(Path(__file__).parent))
 from train import (load_pairs, set_seed, binary_metrics, tune_threshold, test_metrics,
-                   run_epoch_sbert, DEVICE, RESULTS_ROOT, MAIN_SEED)
+                   run_epoch_sbert, save_test_predictions, DEVICE, RESULTS_ROOT, MAIN_SEED)
 from models import SiameseSBERT
 from model_io import load_encoder
 from bias_probe import (audit_encoder, build_audit_set, inject_name, load_test_rows,
@@ -74,12 +74,19 @@ class Adversary(nn.Module):
         return self.net(GradReverse.apply(emb, lambd))
 
 
-def train_variant(name, lambda_max, epochs, lr=2e-5, batch_size=16):
+def train_variant(name, lambda_max, epochs, lr=2e-5):
     set_seed(MAIN_SEED)
     rows = load_pairs(DATA)
     base_dir = RESULTS_ROOT / DATA / "sbert"
     base_metrics = json.loads((base_dir / "metrics.json").read_text(encoding="utf-8"))
-    model = SiameseSBERT(model_name=str(base_dir / "backbone"), max_len=base_metrics["max_len"]).to(DEVICE)
+    head = base_metrics.get("head", "cosine")
+    model = SiameseSBERT(model_name=str(base_dir / "backbone"), max_len=base_metrics["max_len"],
+                         head=head).to(DEVICE)
+    if model.head is not None:
+        model.head.load_state_dict(torch.load(base_dir / "head.pt", map_location=DEVICE))
+    batch_size = base_metrics.get("batch_size", 16)
+    if model.backbone.config.hidden_size > 384:
+        model.backbone.gradient_checkpointing_enable()  # larger backbone (mpnet): fit 8 GB
     adversary = Adversary(dim=model.backbone.config.hidden_size).to(DEVICE)
     optimizer = torch.optim.AdamW([
         {"params": model.parameters(), "lr": lr, "weight_decay": 0.01},
@@ -115,7 +122,7 @@ def train_variant(name, lambda_max, epochs, lr=2e-5, batch_size=16):
                 r_emb = model.encode_texts(resumes, DEVICE)
                 j_emb = model.encode_texts(jds, DEVICE)
             r_emb, j_emb = r_emb.float(), j_emb.float()
-            task_loss = F.mse_loss(F.cosine_similarity(r_emb, j_emb, dim=-1), labels)
+            task_loss = F.mse_loss(model.score_vectors(r_emb, j_emb).float(), labels)
             logits = adversary(r_emb, lambd)
             adv_loss = F.cross_entropy(logits, groups)
             # For the control run (lambda_max = 0) the adversary still trains
@@ -132,7 +139,7 @@ def train_variant(name, lambda_max, epochs, lr=2e-5, batch_size=16):
             adv_accs.append((logits.argmax(1) == groups).float().mean().item())
             step += 1
 
-        val_loss, val_preds, val_labels = run_epoch_sbert(model, rows["val"], None, None, train=False, batch_size=64)
+        val_loss, val_preds, val_labels = run_epoch_sbert(model, rows["val"], None, None, train=False, batch_size=32)
         val_auc = binary_metrics(val_preds, val_labels)[4]
         history.append({"epoch": epoch, "task_loss": float(np.mean(task_losses)),
                         "adv_loss": float(np.mean(adv_losses)), "adv_train_acc": float(np.mean(adv_accs)),
@@ -144,7 +151,7 @@ def train_variant(name, lambda_max, epochs, lr=2e-5, batch_size=16):
     elapsed = time.time() - t0
 
     model.load_state_dict(best["state"])
-    _, test_preds, test_labels = run_epoch_sbert(model, rows["test"], None, None, train=False, batch_size=64)
+    _, test_preds, test_labels = run_epoch_sbert(model, rows["test"], None, None, train=False, batch_size=32)
     threshold = tune_threshold(best["val_preds"], best["val_labels"])
     tm, _, _ = test_metrics(rows["test"], test_preds, test_labels, threshold)
 
@@ -152,8 +159,12 @@ def train_variant(name, lambda_max, epochs, lr=2e-5, batch_size=16):
     out_dir.mkdir(parents=True, exist_ok=True)
     model.backbone.save_pretrained(out_dir / "backbone")
     model.tokenizer.save_pretrained(out_dir / "backbone")
+    if model.head is not None:
+        torch.save(model.head.state_dict(), out_dir / "head.pt")
+    save_test_predictions(out_dir, rows["test"], test_preds, threshold)
     metrics = {"model": name, "lambda_max": lambda_max, "epochs": epochs, "best_epoch": best["epoch"],
                "decision_threshold": threshold, "val_auc": best["auc"], **tm,
+               "head": head, "backbone": base_metrics.get("backbone"), "batch_size": batch_size,
                "max_len": base_metrics["max_len"], "train_seconds": elapsed, "history": history}
     (out_dir / "metrics.json").write_text(json.dumps(metrics, indent=2), encoding="utf-8")
     return metrics
