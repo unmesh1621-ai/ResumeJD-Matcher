@@ -1,0 +1,43 @@
+{
+  "source": "huggingface.co/datasets/cnamuangtoun/resume-job-description-fit",
+  "train": {
+    "pairs": 5338,
+    "unique_resumes": 636,
+    "unique_jds": 238,
+    "label_counts": {
+      "No Fit": 2717,
+      "Potential Fit": 1358,
+      "Good Fit": 1263
+    },
+    "binary_match_rate": 0.49100786811539904,
+    "median_resume_words": 618.0,
+    "median_jd_words": 326.0
+  },
+  "val": {
+    "pairs": 896,
+    "unique_resumes": 336,
+    "unique_jds": 42,
+    "label_counts": {
+      "No Fit": 425,
+      "Good Fit": 275,
+      "Potential Fit": 196
+    },
+    "binary_match_rate": 0.5256696428571429,
+    "median_resume_words": 615.0,
+    "median_jd_words": 370.0
+  },
+  "test": {
+    "pairs": 1759,
+    "unique_resumes": 477,
+    "unique_jds": 71,
+    "label_counts": {
+      "No Fit": 857,
+      "Good Fit": 458,
+      "Potential Fit": 444
+    },
+    "binary_match_rate": 0.5127913587265491,
+    "median_resume_words": 618.0,
+    "median_jd_words": 308.0
+  },
+  "resumes_shared_train_test": 474
+}

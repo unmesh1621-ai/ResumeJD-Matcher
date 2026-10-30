@@ -1,0 +1,46 @@
+{
+  "model": "sbert_control",
+  "lambda_max": 0.0,
+  "epochs": 2,
+  "best_epoch": 1,
+  "decision_threshold": 0.295,
+  "val_auc": 0.8601423754215062,
+  "test_accuracy": 0.6924388857305287,
+  "test_precision": 0.6934619506966774,
+  "test_recall": 0.7172949002217295,
+  "test_f1": 0.7051771117166212,
+  "test_auc": 0.7548841288773555,
+  "test_spearman": 0.4248293651170321,
+  "test_mse": 0.15663320207927964,
+  "test_p_at_1": 0.6197183098591549,
+  "test_p_at_1_random": 0.41756882146902213,
+  "test_p_at_1_n_jds": 71,
+  "test_p_at_3": 0.5845410628019324,
+  "test_p_at_3_random": 0.4296722655695735,
+  "test_p_at_3_n_jds": 69,
+  "test_p_at_5": 0.5884057971014494,
+  "test_p_at_5_random": 0.4296722655695735,
+  "test_p_at_5_n_jds": 69,
+  "max_len": 512,
+  "train_seconds": 137.70527529716492,
+  "history": [
+    {
+      "epoch": 1,
+      "task_loss": 0.06138669135617817,
+      "adv_loss": 0.6941181597952357,
+      "adv_train_acc": 0.5123502994011976,
+      "val_loss": 0.12546180601098708,
+      "val_auc": 0.8601423754215062,
+      "lambda_end": 0.0
+    },
+    {
+      "epoch": 2,
+      "task_loss": 0.05253063841349261,
+      "adv_loss": 0.6941580934795791,
+      "adv_train_acc": 0.5040044910358098,
+      "val_loss": 0.12918223586997815,
+      "val_auc": 0.8428225302859998,
+      "lambda_end": 0.0
+    }
+  ]
+}

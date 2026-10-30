@@ -1,0 +1,97 @@
+{
+  "MLP": {
+    "error_rate": 0.4161455372370665,
+    "error_rate_by_fit_class": {
+      "No Fit": 0.5542590431738623,
+      "Potential Fit": 0.28153153153153154,
+      "Good Fit": 0.28820960698689957
+    },
+    "error_rate_by_resume_length": {
+      "short (<542 words)": 0.4833887043189369,
+      "medium (542-702)": 0.3957968476357268,
+      "long (>702)": 0.36689419795221845
+    },
+    "false_positives": 475,
+    "false_negatives": 257
+  },
+  "1D-CNN": {
+    "error_rate": 0.4673109721432632,
+    "error_rate_by_fit_class": {
+      "No Fit": 0.7374562427071178,
+      "Potential Fit": 0.18468468468468469,
+      "Good Fit": 0.23580786026200873
+    },
+    "error_rate_by_resume_length": {
+      "short (<542 words)": 0.49169435215946844,
+      "medium (542-702)": 0.46409807355516636,
+      "long (>702)": 0.4453924914675768
+    },
+    "false_positives": 632,
+    "false_negatives": 190
+  },
+  "BiLSTM": {
+    "error_rate": 0.4127345082433201,
+    "error_rate_by_fit_class": {
+      "No Fit": 0.44224037339556593,
+      "Potential Fit": 0.41216216216216217,
+      "Good Fit": 0.35807860262008734
+    },
+    "error_rate_by_resume_length": {
+      "short (<542 words)": 0.473421926910299,
+      "medium (542-702)": 0.3905429071803853,
+      "long (>702)": 0.3720136518771331
+    },
+    "false_positives": 379,
+    "false_negatives": 347
+  },
+  "SBERT": {
+    "error_rate": 0.3172256964184196,
+    "error_rate_by_fit_class": {
+      "No Fit": 0.4690781796966161,
+      "Potential Fit": 0.22747747747747749,
+      "Good Fit": 0.12008733624454149
+    },
+    "error_rate_by_resume_length": {
+      "short (<542 words)": 0.38372093023255816,
+      "medium (542-702)": 0.29597197898423816,
+      "long (>702)": 0.2696245733788396
+    },
+    "false_positives": 402,
+    "false_negatives": 156
+  },
+  "cross_model": {
+    "pairwise_error_overlap": {
+      "MLP & 1D-CNN": {
+        "both_wrong": 489,
+        "jaccard": 0.459
+      },
+      "MLP & BiLSTM": {
+        "both_wrong": 586,
+        "jaccard": 0.672
+      },
+      "MLP & SBERT": {
+        "both_wrong": 358,
+        "jaccard": 0.384
+      },
+      "1D-CNN & BiLSTM": {
+        "both_wrong": 459,
+        "jaccard": 0.421
+      },
+      "1D-CNN & SBERT": {
+        "both_wrong": 353,
+        "jaccard": 0.344
+      },
+      "BiLSTM & SBERT": {
+        "both_wrong": 334,
+        "jaccard": 0.352
+      }
+    },
+    "wrong_for_all_models": 235,
+    "wrong_for_all_by_fit_class": {
+      "No Fit": 225,
+      "Potential Fit": 8,
+      "Good Fit": 2
+    },
+    "n_test_pairs": 1759
+  }
+}
