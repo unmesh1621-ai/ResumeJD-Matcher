@@ -1,0 +1,27 @@
+{
+  "model": "SBERT (MPNet, interaction)",
+  "fold": 2,
+  "best_epoch": 5,
+  "val_auc": 0.7671712560401277,
+  "val_within_resume_auc": 0.7410403901103306,
+  "rank_weight": 0.0,
+  "val_loss_curve": [
+    0.16669736160455564,
+    0.1804643896604447,
+    0.16499754559787871,
+    0.177792598606749,
+    0.16693798693105286
+  ],
+  "val_auc_curve": [
+    0.7020886908932206,
+    0.7312426679303529,
+    0.7605389458432825,
+    0.7624157514133064,
+    0.7671712560401277
+  ],
+  "head": "interaction",
+  "backbone": "sentence-transformers/all-mpnet-base-v2",
+  "n_folds": 3,
+  "max_len": 384,
+  "train_seconds": 1341.2591547966003
+}

@@ -1,0 +1,25 @@
+{
+  "model": "SBERT (MiniLM, interaction)",
+  "fold": 2,
+  "best_epoch": 2,
+  "val_auc": 0.7463520932186484,
+  "val_within_resume_auc": 0.7388118142486765,
+  "rank_weight": 0.0,
+  "val_loss_curve": [
+    0.1632418078615477,
+    0.16068627909561128,
+    0.18112730040018887,
+    0.1766364428974492
+  ],
+  "val_auc_curve": [
+    0.6963329949432124,
+    0.7463520932186484,
+    0.7449954688405339,
+    0.7408748712313247
+  ],
+  "head": "interaction",
+  "backbone": "sentence-transformers/all-MiniLM-L6-v2",
+  "n_folds": 3,
+  "max_len": 512,
+  "train_seconds": 550.6725594997406
+}

@@ -1,92 +1,114 @@
 ﻿python : 
-At line:1 char:355
-+ ... JD-Matcher; python src/debias.py *> results/real/logs/debias.log; "de ...
-+                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+At line:1 char:879
++ ... TEXITCODE"; python src/debias.py --lambdas 1 --epochs 1 *> results/re ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     + CategoryInfo          : NotSpecified: (:String) [], RemoteException
     + FullyQualifiedErrorId : NativeCommandError
  
-Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]
-Loading weights: 100%|██████████| 103/103 [00:00<00:00, 4463.41it/s]
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]
+Loading weights:  20%|█▉        | 39/199 [00:00<00:00, 377.28it/s]
+Loading weights:  46%|████▌     | 91/199 [00:00<00:00, 444.55it/s]
+Loading weights: 100%|██████████| 199/199 [00:00<00:00, 858.71it/s]
 before {
   "model": "SBERT",
-  "probe_test_accuracy": 0.604602510460251,
+  "probe_test_accuracy": 0.6736401673640168,
   "chance_accuracy": 0.5,
-  "leakage_gap": 0.10460251046025104,
-  "mean_cosine_between_name_swapped_embeddings": 0.9957135319709778,
-  "mean_abs_score_diff": 0.0027827646117657423,
-  "max_abs_score_diff": 0.05349475145339966,
-  "mean_signed_score_diff_A_minus_B": -0.0008507901220582426,
-  "decision_flip_rate": 0.007959067652075043,
-  "tpr_group_A": 0.6718403547671841,
-  "tpr_group_B": 0.6740576496674058,
-  "tpr_gap_A_minus_B": -0.0022172949002217113,
-  "test_auc_with_names_A": 0.7610237330759857,
-  "test_auc_with_names_B": 0.7607798823824665,
-  "tpr_gap_abs": 0.0022172949002217113,
-  "test_auc": 0.7621964155888509,
-  "test_accuracy": 0.6731097214326321,
-  "test_f1": 0.676056338028169
+  "leakage_gap": 0.17364016736401677,
+  "mean_cosine_between_name_swapped_embeddings": 0.9952332973480225,
+  "mean_abs_score_diff": 0.003535168245434761,
+  "max_abs_score_diff": 0.1179114580154419,
+  "mean_signed_score_diff_A_minus_B": 0.0007416188018396497,
+  "decision_flip_rate": 0.0028425241614553724,
+  "tpr_group_A": 0.8569844789356984,
+  "tpr_group_B": 0.8536585365853658,
+  "tpr_gap_A_minus_B": 0.003325942350332567,
+  "test_auc_with_names_A": 0.7869482312092666,
+  "test_auc_with_names_B": 0.7873065688331647,
+  "tpr_gap_abs": 0.003325942350332567,
+  "test_auc": 0.7876894855720594,
+  "test_accuracy": 0.7350767481523593,
+  "test_f1": 0.7681592039800995,
+  "val_auc": 0.8868864743349569,
+  "val_probe_accuracy": 0.7142857142857143,
+  "dir": "sbert"
 }
 
-Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]
-Loading weights: 100%|██████████| 103/103 [00:00<00:00, 2916.19it/s]
-[sbert_control] epoch 1: {'epoch': 1, 'task_loss': 0.0645538294844017, 'adv_loss': 0.6960689537896367, 'adv_train_acc': 0.5029940119760479, 'val_loss': 0.09447573464629906, 'val_auc': 0.8963681778443862, 'lambda_end': 0.0}
-[sbert_control] epoch 2: {'epoch': 2, 'task_loss': 0.05439984084045637, 'adv_loss': 0.6928298025431033, 'adv_train_acc': 0.5110029940476675, 'val_loss': 0.10880056322951402, 'val_auc': 0.8746396902710128, 'lambda_end': 0.0}
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]
+Loading weights:  26%|██▌       | 51/199 [00:00<00:00, 507.15it/s]
+Loading weights:  51%|█████▏    | 102/199 [00:00<00:00, 501.07it/s]
+Loading weights: 100%|██████████| 199/199 [00:00<00:00, 851.30it/s]
+[sbert_control] epoch 1: {'epoch': 1, 'task_loss': 0.06327526735331485, 'adv_loss': 0.6961580029504741, 'adv_train_acc': 0.5022455089820359, 'val_loss': 0.10612479466778625, 'val_auc': 0.8934857000124892, 'lambda_end': 0.0}
 
 Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]
-Writing model shards: 100%|██████████| 1/1 [00:00<00:00, 15.83it/s]
+Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  1.96it/s]
+Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  1.96it/s]
 
-Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]
-Loading weights: 100%|██████████| 103/103 [00:00<00:00, 4646.45it/s]
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]
+Loading weights:  21%|██        | 42/199 [00:00<00:00, 413.98it/s]
+Loading weights:  42%|████▏     | 84/199 [00:00<00:00, 408.46it/s]
+Loading weights: 100%|██████████| 199/199 [00:00<00:00, 872.10it/s]
 control (λ=0) {
   "model": "SBERT",
-  "probe_test_accuracy": 0.5920502092050209,
+  "probe_test_accuracy": 0.5439330543933054,
   "chance_accuracy": 0.5,
-  "leakage_gap": 0.09205020920502094,
-  "mean_cosine_between_name_swapped_embeddings": 0.9972428679466248,
-  "mean_abs_score_diff": 0.002932431874796748,
-  "max_abs_score_diff": 0.06407451629638672,
-  "mean_signed_score_diff_A_minus_B": -0.0005748916883021593,
-  "decision_flip_rate": 0.0022740193291642978,
-  "tpr_group_A": 0.6352549889135255,
-  "tpr_group_B": 0.6352549889135255,
+  "leakage_gap": 0.043933054393305415,
+  "mean_cosine_between_name_swapped_embeddings": 0.9999048113822937,
+  "mean_abs_score_diff": 0.000983780948445201,
+  "max_abs_score_diff": 0.01705104112625122,
+  "mean_signed_score_diff_A_minus_B": -6.416800897568464e-05,
+  "decision_flip_rate": 0.0,
+  "tpr_group_A": 0.9201773835920177,
+  "tpr_group_B": 0.9201773835920177,
   "tpr_gap_A_minus_B": 0.0,
-  "test_auc_with_names_A": 0.7671840354767184,
-  "test_auc_with_names_B": 0.7668166423894004,
+  "test_auc_with_names_A": 0.7666704613370521,
+  "test_auc_with_names_B": 0.7667066831907314,
   "tpr_gap_abs": 0.0,
-  "test_auc": 0.7675902376929784,
-  "test_accuracy": 0.6918703808982376,
-  "test_f1": 0.6777645659928656
+  "test_auc": 0.766810821020059,
+  "test_accuracy": 0.7129050596930074,
+  "test_f1": 0.766743648960739,
+  "val_auc": 0.8934857000124892,
+  "val_probe_accuracy": 0.5416666666666666,
+  "dir": "sbert_control"
 }
 
-Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]
-Loading weights: 100%|██████████| 103/103 [00:00<00:00, 4316.59it/s]
-[sbert_debiased] epoch 1: {'epoch': 1, 'task_loss': 0.06481988491590865, 'adv_loss': 0.6971282334384804, 'adv_train_acc': 0.5020209581195237, 'val_loss': 0.09769330250232347, 'val_auc': 0.8941126514299989, 'lambda_end': 0.9865142576601473}
-[sbert_debiased] epoch 2: {'epoch': 2, 'task_loss': 0.055485376424552084, 'adv_loss': 0.6958807442716496, 'adv_train_acc': 0.4937125748681451, 'val_loss': 0.10877694745015885, 'val_auc': 0.8788909704008993, 'lambda_end': 0.9999092042625952}
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]
+Loading weights:  19%|█▊        | 37/199 [00:00<00:00, 338.27it/s]
+Loading weights:  36%|███▌      | 71/199 [00:00<00:00, 332.69it/s]
+Loading weights:  53%|█████▎    | 105/199 [00:00<00:00, 288.54it/s]
+Loading weights: 100%|██████████| 199/199 [00:00<00:00, 511.49it/s]
+[sbert_debiased_l1] epoch 1: {'epoch': 1, 'task_loss': 0.06454372032152343, 'adv_loss': 0.6964419124547593, 'adv_train_acc': 0.5056137724550899, 'val_loss': 0.10997435114612537, 'val_auc': 0.8922742600224803, 'lambda_end': 0.9999092042625952}
 
 Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]
-Writing model shards: 100%|██████████| 1/1 [00:00<00:00, 15.95it/s]
+Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  1.85it/s]
+Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  1.85it/s]
 
-Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]
-Loading weights: 100%|██████████| 103/103 [00:00<00:00, 4117.75it/s]
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]
+Loading weights:  27%|██▋       | 53/199 [00:00<00:00, 480.10it/s]
+Loading weights:  51%|█████▏    | 102/199 [00:00<00:00, 392.76it/s]
+Loading weights:  72%|███████▏  | 143/199 [00:00<00:00, 371.84it/s]
+Loading weights: 100%|██████████| 199/199 [00:00<00:00, 531.79it/s]
 debiased (λ=1) {
   "model": "SBERT",
-  "probe_test_accuracy": 0.5271966527196653,
+  "probe_test_accuracy": 0.5376569037656904,
   "chance_accuracy": 0.5,
-  "leakage_gap": 0.027196652719665315,
-  "mean_cosine_between_name_swapped_embeddings": 0.9997769594192505,
-  "mean_abs_score_diff": 0.002054939977824688,
-  "max_abs_score_diff": 0.06557738780975342,
-  "mean_signed_score_diff_A_minus_B": -0.0005493701319210231,
-  "decision_flip_rate": 0.0045480386583285955,
-  "tpr_group_A": 0.6507760532150776,
-  "tpr_group_B": 0.6496674057649667,
-  "tpr_gap_A_minus_B": 0.0011086474501108556,
-  "test_auc_with_names_A": 0.7623975762405338,
-  "test_auc_with_names_B": 0.7621466105400421,
-  "tpr_gap_abs": 0.0011086474501108556,
-  "test_auc": 0.7628173616519236,
-  "test_accuracy": 0.6816372939169983,
-  "test_f1": 0.6788990825688074
+  "leakage_gap": 0.03765690376569042,
+  "mean_cosine_between_name_swapped_embeddings": 0.9999361634254456,
+  "mean_abs_score_diff": 0.0011127917096018791,
+  "max_abs_score_diff": 0.031062066555023193,
+  "mean_signed_score_diff_A_minus_B": -0.0006262477836571634,
+  "decision_flip_rate": 0.0,
+  "tpr_group_A": 0.9190687361419069,
+  "tpr_group_B": 0.9190687361419069,
+  "tpr_gap_A_minus_B": 0.0,
+  "test_auc_with_names_A": 0.7593937496604203,
+  "test_auc_with_names_B": 0.7593316550541129,
+  "tpr_gap_abs": 0.0,
+  "test_auc": 0.7595865016674987,
+  "test_accuracy": 0.7026719727117681,
+  "test_f1": 0.7599816429554842,
+  "val_auc": 0.8922742600224803,
+  "val_probe_accuracy": 0.5089285714285714,
+  "dir": "sbert_debiased_l1"
 }
+selected on validation: debiased (λ=1)
 wrote C:\Users\unmes\OneDrive\Desktop\ResumeJD-Matcher\results\real\fairness_report.json

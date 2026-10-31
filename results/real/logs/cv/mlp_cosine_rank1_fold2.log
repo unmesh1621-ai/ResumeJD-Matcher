@@ -1,0 +1,38 @@
+﻿device: cuda  head: cosine  out: mlp_cosine_rank1  cv: (3, 2)
+[MLP] epoch 1: train_loss=1.0512 val_loss=0.3539 val_auc=0.5135
+[MLP] epoch 2: train_loss=0.9292 val_loss=0.2834 val_auc=0.5226
+[MLP] epoch 3: train_loss=0.8081 val_loss=0.2623 val_auc=0.5182
+[MLP] epoch 4: train_loss=0.7286 val_loss=0.2528 val_auc=0.5542
+[MLP] epoch 5: train_loss=0.6736 val_loss=0.2421 val_auc=0.5603
+[MLP] epoch 6: train_loss=0.5506 val_loss=0.2308 val_auc=0.5702
+[MLP] epoch 7: train_loss=0.5223 val_loss=0.2317 val_auc=0.5727
+[MLP] epoch 8: train_loss=0.5005 val_loss=0.2280 val_auc=0.5894
+[MLP] epoch 9: train_loss=0.4431 val_loss=0.2488 val_auc=0.5677
+[MLP] epoch 10: train_loss=0.3850 val_loss=0.2419 val_auc=0.5800
+[MLP] epoch 11: train_loss=0.3657 val_loss=0.2387 val_auc=0.5843
+[MLP] epoch 12: train_loss=0.3280 val_loss=0.2407 val_auc=0.5724
+[MLP] epoch 13: train_loss=0.3129 val_loss=0.2297 val_auc=0.5894
+[MLP] epoch 14: train_loss=0.3209 val_loss=0.2316 val_auc=0.5858
+[MLP] epoch 15: train_loss=0.2812 val_loss=0.2305 val_auc=0.5791
+[MLP] epoch 16: train_loss=0.2752 val_loss=0.2285 val_auc=0.5932
+[MLP] epoch 17: train_loss=0.2703 val_loss=0.2356 val_auc=0.5846
+[MLP] epoch 18: train_loss=0.2624 val_loss=0.2369 val_auc=0.5887
+[MLP] epoch 19: train_loss=0.2177 val_loss=0.2313 val_auc=0.5885
+[MLP] epoch 20: train_loss=0.2168 val_loss=0.2351 val_auc=0.5849
+[MLP] epoch 21: train_loss=0.2174 val_loss=0.2340 val_auc=0.5852
+[MLP] epoch 22: train_loss=0.2213 val_loss=0.2280 val_auc=0.5902
+[MLP] epoch 23: train_loss=0.2208 val_loss=0.2266 val_auc=0.5900
+[MLP] epoch 24: train_loss=0.2180 val_loss=0.2309 val_auc=0.5883
+[MLP] early stopping at epoch 24, best epoch 16
+{
+  "model": "MLP",
+  "fold": 2,
+  "best_epoch": 16,
+  "val_auc": 0.5932377125917211,
+  "val_within_resume_auc": 0.6603186879887559,
+  "rank_weight": 1.0,
+  "head": "cosine",
+  "n_folds": 3,
+  "train_seconds": 68.0530652999878,
+  "embedding_warm_started_from_mlp": false
+}

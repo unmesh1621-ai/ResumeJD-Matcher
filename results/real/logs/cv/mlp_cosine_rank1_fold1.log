@@ -1,0 +1,42 @@
+﻿device: cuda  head: cosine  out: mlp_cosine_rank1  cv: (3, 1)
+[MLP] epoch 1: train_loss=1.0330 val_loss=0.3733 val_auc=0.5556
+[MLP] epoch 2: train_loss=0.9341 val_loss=0.3564 val_auc=0.5685
+[MLP] epoch 3: train_loss=0.8131 val_loss=0.2505 val_auc=0.5667
+[MLP] epoch 4: train_loss=0.7566 val_loss=0.2614 val_auc=0.5710
+[MLP] epoch 5: train_loss=0.6705 val_loss=0.2238 val_auc=0.5712
+[MLP] epoch 6: train_loss=0.5929 val_loss=0.2236 val_auc=0.5773
+[MLP] epoch 7: train_loss=0.5089 val_loss=0.2201 val_auc=0.5735
+[MLP] epoch 8: train_loss=0.4686 val_loss=0.2381 val_auc=0.5442
+[MLP] epoch 9: train_loss=0.4153 val_loss=0.2437 val_auc=0.5508
+[MLP] epoch 10: train_loss=0.3789 val_loss=0.1972 val_auc=0.6209
+[MLP] epoch 11: train_loss=0.3353 val_loss=0.2161 val_auc=0.5779
+[MLP] epoch 12: train_loss=0.3305 val_loss=0.2142 val_auc=0.5936
+[MLP] epoch 13: train_loss=0.3064 val_loss=0.2098 val_auc=0.5991
+[MLP] epoch 14: train_loss=0.3097 val_loss=0.2165 val_auc=0.6001
+[MLP] epoch 15: train_loss=0.2689 val_loss=0.2005 val_auc=0.6226
+[MLP] epoch 16: train_loss=0.2532 val_loss=0.2025 val_auc=0.6113
+[MLP] epoch 17: train_loss=0.2337 val_loss=0.1977 val_auc=0.6190
+[MLP] epoch 18: train_loss=0.2273 val_loss=0.1962 val_auc=0.6166
+[MLP] epoch 19: train_loss=0.2171 val_loss=0.2060 val_auc=0.5977
+[MLP] epoch 20: train_loss=0.2181 val_loss=0.1930 val_auc=0.6229
+[MLP] epoch 21: train_loss=0.2272 val_loss=0.1963 val_auc=0.6213
+[MLP] epoch 22: train_loss=0.2067 val_loss=0.1982 val_auc=0.6211
+[MLP] epoch 23: train_loss=0.2040 val_loss=0.1978 val_auc=0.6116
+[MLP] epoch 24: train_loss=0.1964 val_loss=0.1985 val_auc=0.6216
+[MLP] epoch 25: train_loss=0.1956 val_loss=0.1990 val_auc=0.6207
+[MLP] epoch 26: train_loss=0.1843 val_loss=0.1967 val_auc=0.6154
+[MLP] epoch 27: train_loss=0.1957 val_loss=0.1991 val_auc=0.6114
+[MLP] epoch 28: train_loss=0.1824 val_loss=0.1956 val_auc=0.6160
+[MLP] early stopping at epoch 28, best epoch 20
+{
+  "model": "MLP",
+  "fold": 1,
+  "best_epoch": 20,
+  "val_auc": 0.6229299615776849,
+  "val_within_resume_auc": 0.6166037685006924,
+  "rank_weight": 1.0,
+  "head": "cosine",
+  "n_folds": 3,
+  "train_seconds": 86.63873195648193,
+  "embedding_warm_started_from_mlp": false
+}

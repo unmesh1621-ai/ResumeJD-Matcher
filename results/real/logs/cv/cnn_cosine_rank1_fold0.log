@@ -1,0 +1,39 @@
+﻿device: cuda  head: cosine  out: cnn_cosine_rank1  cv: (3, 0)
+[1D-CNN] warm-started + froze embeddings from trained MLP
+[1D-CNN] epoch 1: train_loss=1.0562 val_loss=0.4849 val_auc=0.4703
+[1D-CNN] epoch 2: train_loss=0.9140 val_loss=0.4614 val_auc=0.4478
+[1D-CNN] epoch 3: train_loss=0.8371 val_loss=0.4042 val_auc=0.4400
+[1D-CNN] epoch 4: train_loss=0.6796 val_loss=0.2807 val_auc=0.4327
+[1D-CNN] epoch 5: train_loss=0.6361 val_loss=0.3033 val_auc=0.4323
+[1D-CNN] epoch 6: train_loss=0.5480 val_loss=0.2962 val_auc=0.4393
+[1D-CNN] epoch 7: train_loss=0.4759 val_loss=0.2771 val_auc=0.4774
+[1D-CNN] epoch 8: train_loss=0.4519 val_loss=0.3008 val_auc=0.4713
+[1D-CNN] epoch 9: train_loss=0.4051 val_loss=0.2733 val_auc=0.4870
+[1D-CNN] epoch 10: train_loss=0.3504 val_loss=0.2808 val_auc=0.4922
+[1D-CNN] epoch 11: train_loss=0.3429 val_loss=0.2517 val_auc=0.5059
+[1D-CNN] epoch 12: train_loss=0.3178 val_loss=0.2554 val_auc=0.5094
+[1D-CNN] epoch 13: train_loss=0.3067 val_loss=0.2693 val_auc=0.5163
+[1D-CNN] epoch 14: train_loss=0.2976 val_loss=0.2716 val_auc=0.5052
+[1D-CNN] epoch 15: train_loss=0.2500 val_loss=0.2676 val_auc=0.5221
+[1D-CNN] epoch 16: train_loss=0.2414 val_loss=0.2551 val_auc=0.5296
+[1D-CNN] epoch 17: train_loss=0.2172 val_loss=0.2607 val_auc=0.5211
+[1D-CNN] epoch 18: train_loss=0.2148 val_loss=0.2720 val_auc=0.5096
+[1D-CNN] epoch 19: train_loss=0.1964 val_loss=0.2897 val_auc=0.4985
+[1D-CNN] epoch 20: train_loss=0.1904 val_loss=0.2785 val_auc=0.5027
+[1D-CNN] epoch 21: train_loss=0.1805 val_loss=0.2700 val_auc=0.5149
+[1D-CNN] epoch 22: train_loss=0.1708 val_loss=0.2814 val_auc=0.5021
+[1D-CNN] epoch 23: train_loss=0.1908 val_loss=0.2756 val_auc=0.5028
+[1D-CNN] epoch 24: train_loss=0.1733 val_loss=0.2746 val_auc=0.5233
+[1D-CNN] early stopping at epoch 24, best epoch 16
+{
+  "model": "1D-CNN",
+  "fold": 0,
+  "best_epoch": 16,
+  "val_auc": 0.5296257760719137,
+  "val_within_resume_auc": 0.6125003548208676,
+  "rank_weight": 1.0,
+  "head": "cosine",
+  "n_folds": 3,
+  "train_seconds": 114.1350314617157,
+  "embedding_warm_started_from_mlp": true
+}

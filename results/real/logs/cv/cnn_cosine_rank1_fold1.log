@@ -1,0 +1,18 @@
+﻿device: cuda  head: cosine  out: cnn_cosine_rank1  cv: (3, 1)
+[1D-CNN] warm-started + froze embeddings from trained MLP
+[1D-CNN] epoch 1: train_loss=1.0655 val_loss=0.4446 val_auc=0.5208
+[1D-CNN] epoch 2: train_loss=0.8780 val_loss=0.3806 val_auc=0.4934
+[1D-CNN] epoch 3: train_loss=0.7970 val_loss=0.2973 val_auc=0.4834
+[1D-CNN] epoch 4: train_loss=0.7174 val_loss=0.2948 val_auc=0.4704
+[1D-CNN] epoch 5: train_loss=0.6147 val_loss=0.2447 val_auc=0.5772
+[1D-CNN] epoch 6: train_loss=0.5587 val_loss=0.2788 val_auc=0.4464
+[1D-CNN] epoch 7: train_loss=0.4841 val_loss=0.2351 val_auc=0.4932
+[1D-CNN] epoch 8: train_loss=0.4537 val_loss=0.2333 val_auc=0.5135
+[1D-CNN] epoch 9: train_loss=0.4297 val_loss=0.2579 val_auc=0.4905
+[1D-CNN] epoch 10: train_loss=0.3796 val_loss=0.2128 val_auc=0.5585
+[1D-CNN] epoch 11: train_loss=0.3394 val_loss=0.2143 val_auc=0.5633
+[1D-CNN] epoch 12: train_loss=0.3409 val_loss=0.2134 val_auc=0.5809
+[1D-CNN] epoch 13: train_loss=0.3093 val_loss=0.2357 val_auc=0.5376
+[1D-CNN] epoch 14: train_loss=0.3009 val_loss=0.2147 val_auc=0.5662
+[1D-CNN] epoch 15: train_loss=0.2450 val_loss=0.2130 val_auc=0.5880
+[1D-CNN] epoch 16: train_loss=0.2224 val_loss=0.2224 val_auc=0.5609

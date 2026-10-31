@@ -1,0 +1,5 @@
+﻿sbert_minilm_cosine        [ablation_cosine/sbert] val_auc=0.8771  (test_auc=0.7404, info only)
+sbert_minilm_interaction   [ablation_interaction/sbert_minilm] val_auc=0.8977  (test_auc=0.7622, info only)
+sbert_mpnet_interaction    [sbert_mpnet_interaction] val_auc=0.8869  (test_auc=0.7877, info only)
+
+selected: sbert_mpnet_interaction -> sbert_mpnet_interaction  (max mean AUC over grouped 3-fold CV on train+val (results/real/model_selection.json))

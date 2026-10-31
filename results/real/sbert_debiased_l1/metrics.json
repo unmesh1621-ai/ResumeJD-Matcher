@@ -1,0 +1,42 @@
+{
+  "model": "sbert_debiased_l1",
+  "lambda_max": 1.0,
+  "epochs": 1,
+  "best_epoch": 1,
+  "decision_threshold": 0.091,
+  "val_auc": 0.8922742600224803,
+  "test_accuracy": 0.7026719727117681,
+  "test_precision": 0.6483946750195771,
+  "test_recall": 0.917960088691796,
+  "test_f1": 0.7599816429554842,
+  "test_auc": 0.7595865016674987,
+  "test_spearman": 0.4718965928957127,
+  "test_within_resume_auc": 0.6858172897061786,
+  "test_within_resume_auc_n_resumes": 234,
+  "test_mse": 0.14961495854057355,
+  "test_p_at_1": 0.6197183098591549,
+  "test_p_at_1_random": 0.41756882146902213,
+  "test_p_at_1_n_jds": 71,
+  "test_p_at_3": 0.6038647342995169,
+  "test_p_at_3_random": 0.4296722655695735,
+  "test_p_at_3_n_jds": 69,
+  "test_p_at_5": 0.591304347826087,
+  "test_p_at_5_random": 0.4296722655695735,
+  "test_p_at_5_n_jds": 69,
+  "head": "interaction",
+  "backbone": "sentence-transformers/all-mpnet-base-v2",
+  "batch_size": 8,
+  "max_len": 384,
+  "train_seconds": 335.6485652923584,
+  "history": [
+    {
+      "epoch": 1,
+      "task_loss": 0.06454372032152343,
+      "adv_loss": 0.6964419124547593,
+      "adv_train_acc": 0.5056137724550899,
+      "val_loss": 0.10997435114612537,
+      "val_auc": 0.8922742600224803,
+      "lambda_end": 0.9999092042625952
+    }
+  ]
+}

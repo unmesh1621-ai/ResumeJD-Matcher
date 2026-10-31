@@ -18,19 +18,19 @@
 auditing cnn ...
 {
   "model": "1D-CNN",
-  "probe_test_accuracy": 0.5418410041841004,
+  "probe_test_accuracy": 0.5125523012552301,
   "chance_accuracy": 0.5,
-  "leakage_gap": 0.04184100418410042,
-  "mean_cosine_between_name_swapped_embeddings": 0.9989116191864014,
-  "mean_abs_score_diff": 0.002612681593745947,
-  "max_abs_score_diff": 0.026598811149597168,
-  "mean_signed_score_diff_A_minus_B": 0.0019446087535470724,
-  "decision_flip_rate": 0.03524729960204662,
-  "tpr_group_A": 0.6651884700665188,
-  "tpr_group_B": 0.6308203991130821,
-  "tpr_gap_A_minus_B": 0.03436807095343675,
-  "test_auc_with_names_A": 0.5533832504974037,
-  "test_auc_with_names_B": 0.5527791217235394
+  "leakage_gap": 0.012552301255230103,
+  "mean_cosine_between_name_swapped_embeddings": 0.9965853691101074,
+  "mean_abs_score_diff": 0.014481216669082642,
+  "max_abs_score_diff": 0.21225225925445557,
+  "mean_signed_score_diff_A_minus_B": -0.009397920221090317,
+  "decision_flip_rate": 0.015349630471859011,
+  "tpr_group_A": 0.7982261640798226,
+  "tpr_group_B": 0.8059866962305987,
+  "tpr_gap_A_minus_B": -0.0077605321507761005,
+  "test_auc_with_names_A": 0.5180578876967299,
+  "test_auc_with_names_B": 0.5168742092639979
 }
 auditing bilstm ...
 {
@@ -51,28 +51,30 @@ auditing bilstm ...
 }
 auditing sbert ...
 python : 
-At line:1 char:355
-+ ... JD-Matcher; python src/bias_probe.py *> results/real/logs/bias_probe. ...
+At line:1 char:789
++ ... TEXITCODE"; python src/bias_probe.py *> results/real/logs/bias_probe. ...
 +                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     + CategoryInfo          : NotSpecified: (:String) [], RemoteException
     + FullyQualifiedErrorId : NativeCommandError
  
-Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]
-Loading weights: 100%|██████████| 103/103 [00:00<00:00, 4045.98it/s]
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]
+Loading weights:  18%|█▊        | 35/199 [00:00<00:00, 307.19it/s]
+Loading weights:  33%|███▎      | 66/199 [00:00<00:00, 302.80it/s]
+Loading weights: 100%|██████████| 199/199 [00:00<00:00, 697.35it/s]
 {
   "model": "SBERT",
-  "probe_test_accuracy": 0.604602510460251,
+  "probe_test_accuracy": 0.6736401673640168,
   "chance_accuracy": 0.5,
-  "leakage_gap": 0.10460251046025104,
-  "mean_cosine_between_name_swapped_embeddings": 0.9957135319709778,
-  "mean_abs_score_diff": 0.0027827646117657423,
-  "max_abs_score_diff": 0.05349475145339966,
-  "mean_signed_score_diff_A_minus_B": -0.0008507901220582426,
-  "decision_flip_rate": 0.007959067652075043,
-  "tpr_group_A": 0.6718403547671841,
-  "tpr_group_B": 0.6740576496674058,
-  "tpr_gap_A_minus_B": -0.0022172949002217113,
-  "test_auc_with_names_A": 0.7610237330759857,
-  "test_auc_with_names_B": 0.7607798823824665
+  "leakage_gap": 0.17364016736401677,
+  "mean_cosine_between_name_swapped_embeddings": 0.9952332973480225,
+  "mean_abs_score_diff": 0.003535168245434761,
+  "max_abs_score_diff": 0.1179114580154419,
+  "mean_signed_score_diff_A_minus_B": 0.0007416188018396497,
+  "decision_flip_rate": 0.0028425241614553724,
+  "tpr_group_A": 0.8569844789356984,
+  "tpr_group_B": 0.8536585365853658,
+  "tpr_gap_A_minus_B": 0.003325942350332567,
+  "test_auc_with_names_A": 0.7869482312092666,
+  "test_auc_with_names_B": 0.7873065688331647
 }
 wrote C:\Users\unmes\OneDrive\Desktop\ResumeJD-Matcher\results\real\bias_probe_report.json

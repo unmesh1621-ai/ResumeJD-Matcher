@@ -1,0 +1,51 @@
+﻿device: cuda  head: interaction  out: results/real/ablation_interaction/cnn
+[1D-CNN] warm-started + froze embeddings from trained MLP
+[1D-CNN] epoch 1: train_loss=0.1598 val_loss=0.2661 val_auc=0.6097
+[1D-CNN] epoch 2: train_loss=0.1281 val_loss=0.2644 val_auc=0.5334
+[1D-CNN] epoch 3: train_loss=0.1032 val_loss=0.2811 val_auc=0.5084
+[1D-CNN] epoch 4: train_loss=0.0868 val_loss=0.3335 val_auc=0.5004
+[1D-CNN] epoch 5: train_loss=0.0793 val_loss=0.3361 val_auc=0.4407
+[1D-CNN] epoch 6: train_loss=0.0724 val_loss=0.3706 val_auc=0.4196
+[1D-CNN] epoch 7: train_loss=0.0638 val_loss=0.3505 val_auc=0.4347
+[1D-CNN] epoch 8: train_loss=0.0601 val_loss=0.3607 val_auc=0.4552
+[1D-CNN] epoch 9: train_loss=0.0570 val_loss=0.3504 val_auc=0.4752
+[1D-CNN] early stopping at epoch 9, best epoch 1
+{
+  "model": "1D-CNN",
+  "seed": 123,
+  "trainable_parameters": 168577,
+  "epochs_run": 9,
+  "best_epoch": 1,
+  "best_val_loss": 0.2661428881609546,
+  "decision_threshold": 0.116,
+  "val_accuracy": 0.6261160714285714,
+  "val_precision": 0.5979827089337176,
+  "val_recall": 0.881104033970276,
+  "val_f1": 0.7124463519313304,
+  "val_auc": 0.6097464718371425,
+  "val_within_resume_auc": 0.3470277212747092,
+  "test_accuracy": 0.5298465036952814,
+  "test_precision": 0.5305126118795769,
+  "test_recall": 0.7228381374722838,
+  "test_f1": 0.6119192867198499,
+  "test_auc": 0.5133762131086889,
+  "test_spearman": 0.05288006508829907,
+  "test_within_resume_auc": 0.4528408907377162,
+  "test_within_resume_auc_n_resumes": 234,
+  "test_mse": 0.2352342545327089,
+  "test_p_at_1": 0.39436619718309857,
+  "test_p_at_1_random": 0.41756882146902213,
+  "test_p_at_1_n_jds": 71,
+  "test_p_at_3": 0.4541062801932366,
+  "test_p_at_3_random": 0.4296722655695735,
+  "test_p_at_3_n_jds": 69,
+  "test_p_at_5": 0.4579710144927536,
+  "test_p_at_5_random": 0.4296722655695735,
+  "test_p_at_5_n_jds": 69,
+  "train_seconds": 25.846117973327637,
+  "device": "cuda",
+  "head": "interaction",
+  "max_len": 512,
+  "vocab_size": 20000,
+  "embedding_warm_started_from_mlp": true
+}

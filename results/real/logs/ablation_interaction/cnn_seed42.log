@@ -1,0 +1,51 @@
+﻿device: cuda  head: interaction  out: results/real/ablation_interaction/cnn
+[1D-CNN] warm-started + froze embeddings from trained MLP
+[1D-CNN] epoch 1: train_loss=0.1597 val_loss=0.2219 val_auc=0.6553
+[1D-CNN] epoch 2: train_loss=0.1316 val_loss=0.2829 val_auc=0.4521
+[1D-CNN] epoch 3: train_loss=0.1033 val_loss=0.3008 val_auc=0.5047
+[1D-CNN] epoch 4: train_loss=0.0880 val_loss=0.3222 val_auc=0.4296
+[1D-CNN] epoch 5: train_loss=0.0760 val_loss=0.3405 val_auc=0.5437
+[1D-CNN] epoch 6: train_loss=0.0665 val_loss=0.3464 val_auc=0.4495
+[1D-CNN] epoch 7: train_loss=0.0634 val_loss=0.3416 val_auc=0.4922
+[1D-CNN] epoch 8: train_loss=0.0608 val_loss=0.3650 val_auc=0.4098
+[1D-CNN] epoch 9: train_loss=0.0584 val_loss=0.3731 val_auc=0.4087
+[1D-CNN] early stopping at epoch 9, best epoch 1
+{
+  "model": "1D-CNN",
+  "seed": 42,
+  "trainable_parameters": 168577,
+  "epochs_run": 9,
+  "best_epoch": 1,
+  "best_val_loss": 0.221865943766066,
+  "decision_threshold": 0.2,
+  "val_accuracy": 0.6372767857142857,
+  "val_precision": 0.6133540372670807,
+  "val_recall": 0.8386411889596603,
+  "val_f1": 0.7085201793721974,
+  "val_auc": 0.6552516548020482,
+  "val_within_resume_auc": 0.49805020949599266,
+  "test_accuracy": 0.5713473564525299,
+  "test_precision": 0.5669077757685352,
+  "test_recall": 0.6951219512195121,
+  "test_f1": 0.6245019920318725,
+  "test_auc": 0.55660182092433,
+  "test_spearman": 0.1317231628456893,
+  "test_within_resume_auc": 0.47511646936250107,
+  "test_within_resume_auc_n_resumes": 234,
+  "test_mse": 0.20041519460129037,
+  "test_p_at_1": 0.43661971830985913,
+  "test_p_at_1_random": 0.41756882146902213,
+  "test_p_at_1_n_jds": 71,
+  "test_p_at_3": 0.45893719806763283,
+  "test_p_at_3_random": 0.4296722655695735,
+  "test_p_at_3_n_jds": 69,
+  "test_p_at_5": 0.47536231884057967,
+  "test_p_at_5_random": 0.4296722655695735,
+  "test_p_at_5_n_jds": 69,
+  "train_seconds": 26.65288734436035,
+  "device": "cuda",
+  "head": "interaction",
+  "max_len": 512,
+  "vocab_size": 20000,
+  "embedding_warm_started_from_mlp": true
+}
