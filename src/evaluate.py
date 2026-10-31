@@ -25,7 +25,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from sklearn.metrics import roc_curve
+from sklearn.metrics import roc_curve, roc_auc_score
 
 ROOT = Path(__file__).parent.parent
 DATA_DIR = ROOT / "data"
@@ -58,11 +58,19 @@ def summarise(model_dir, label):
     """One table row: mean/std over seeds of every metric in TABLE_METRICS."""
     main = json.loads((model_dir / "metrics.json").read_text(encoding="utf-8"))
     seeds = load_seed_metrics(model_dir) or [main]
-    row = {"model": label, "dir": str(model_dir.relative_to(ROOT)), "n_seeds": len(seeds),
+    row = {"model": label, "dir": model_dir.relative_to(ROOT).as_posix(), "n_seeds": len(seeds),
            "head": main.get("head", "cosine"), "backbone": main.get("backbone", ""),
            "trainable_parameters": main.get("trainable_parameters", 0),
            "train_seconds": float(np.mean([s.get("train_seconds", 0.0) for s in seeds]))}
     md = [label, str(len(seeds)), f"{row['trainable_parameters']:,}" if row["trainable_parameters"] else "—"]
+    if all("test_within_resume_auc" not in s for s in seeds) and (model_dir / "test_predictions.csv").exists():
+        # runs made before this metric existed: derive it from the saved predictions
+        p = pd.read_csv(model_dir / "test_predictions.csv")
+        y = (p["similarity_label"] >= 0.5).astype(int)
+        aucs = [roc_auc_score(g_y, g_s) for (_, g_y), (_, g_s) in
+                zip(y.groupby(p["resume_id"]), p["pred_score"].groupby(p["resume_id"])) if 0 < g_y.sum() < len(g_y)]
+        for s in seeds:
+            s["test_within_resume_auc"] = float(np.mean(aucs))
     for m, _ in TABLE_METRICS:
         vals = np.array([s.get(m, np.nan) for s in seeds], dtype=float)
         row[m] = float(np.nanmean(vals)) if not np.all(np.isnan(vals)) else np.nan
@@ -98,12 +106,14 @@ def build_comparison(results_dir):
     pd.DataFrame(main_rows).to_csv(results_dir / "comparison.csv", index=False)
 
     # every other trained variant = ablation (head / backbone choices)
-    ablation_dirs = sorted(p.parent for p in results_dir.glob("**/metrics.json")
-                           if p.parent.name not in dict(MODELS)
-                           and "baselines" not in p.parts
-                           and not p.parent.name.startswith("sbert_control")
-                           and not p.parent.name.startswith("sbert_debiased"))
-    ablation_dirs += [results_dir / k for k, _ in MODELS if (results_dir / k / "metrics.json").exists()]
+    main_dirs = {results_dir / k for k, _ in MODELS}
+    ablation_dirs = [p.parent for p in results_dir.glob("**/metrics.json")
+                     if p.parent not in main_dirs
+                     and "baselines" not in p.parts
+                     and not p.parent.name.startswith(("sbert_control", "sbert_debiased"))]
+    # the selected SBERT is a copy of one candidate, so it is not listed twice;
+    # the selected scratch models are listed with their ablation counterparts
+    ablation_dirs += [d for d in main_dirs if d.name != "sbert" and (d / "metrics.json").exists()]
     abl_rows, abl_md = collect(results_dir, [(d, variant_label(d, results_dir)) for d in sorted(set(ablation_dirs))])
     pd.DataFrame(abl_rows).to_csv(results_dir / "comparison_ablations.csv", index=False)
 

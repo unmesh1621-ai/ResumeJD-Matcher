@@ -102,8 +102,9 @@ def main():
     if not args.skip_zero_shot:
         max_len = DATA_CONFIG[args.data]["sbert_max_len"]
         for backbone in ("minilm", "mpnet"):
-            evaluate(f"zero_shot_{backbone}", rows, *zero_shot(rows, backbone, max_len), out_root,
-                     extra={"backbone": SBERT_BACKBONES[backbone]})
+            bl_len = min(max_len, 384) if backbone == "mpnet" else max_len  # same as train.py
+            evaluate(f"zero_shot_{backbone}", rows, *zero_shot(rows, backbone, bl_len), out_root,
+                     extra={"backbone": SBERT_BACKBONES[backbone], "max_len": bl_len})
 
 
 if __name__ == "__main__":

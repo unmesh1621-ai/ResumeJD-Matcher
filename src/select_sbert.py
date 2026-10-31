@@ -16,8 +16,8 @@ ROOT = Path(__file__).parent.parent
 CANDIDATES = [
     "ablation_cosine/sbert",               # MiniLM, cosine (first run)
     "ablation_interaction/sbert_minilm",   # MiniLM, interaction head
-    "sbert_mpnet_cosine",                  # MPNet, cosine
     "sbert_mpnet_interaction",             # MPNet, interaction head
+    "sbert_mpnet_cosine",                  # MPNet, cosine (optional; not run in the final pass)
 ]
 
 

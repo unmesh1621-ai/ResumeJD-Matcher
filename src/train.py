@@ -433,12 +433,13 @@ def train_sbert_model(data, seed, head, out_name, backbone="minilm", epochs=None
     cfg = DATA_CONFIG[data]
     set_seed(seed)
     rows = load_pairs(data)
-    model = SiameseSBERT(SBERT_BACKBONES[backbone], max_len=cfg["sbert_max_len"], head=head).to(DEVICE)
-    batch_size = 16
+    max_len, batch_size = cfg["sbert_max_len"], 16
     if backbone == "mpnet":
-        # 12-layer 768-d model at 512 tokens: trade compute for memory to fit 8 GB
-        model.backbone.gradient_checkpointing_enable()
-        batch_size = 8
+        # all-mpnet-base-v2 was trained with max_seq_length 384; at that length
+        # and batch 8 the 12-layer 768-d model fits an 8 GB GPU (transformers'
+        # MPNet has no gradient-checkpointing support)
+        max_len, batch_size = min(max_len, 384), 8
+    model = SiameseSBERT(SBERT_BACKBONES[backbone], max_len=max_len, head=head).to(DEVICE)
     # the interaction head starts from random init, so it gets a larger lr
     head_params = list(model.head.parameters()) if model.head is not None else []
     optimizer = torch.optim.AdamW([
@@ -472,7 +473,7 @@ def train_sbert_model(data, seed, head, out_name, backbone="minilm", epochs=None
     metrics = finalize(out_dir, "sbert", label, rows, (tl, vl, va), best,
                        test_preds, test_labels, n_params, elapsed, seed,
                        extra={"head": head, "backbone": SBERT_BACKBONES[backbone],
-                              "max_len": cfg["sbert_max_len"], "lr": lr, "batch_size": batch_size})
+                              "max_len": max_len, "lr": lr, "batch_size": batch_size})
     if seed == MAIN_SEED:
         model.backbone.save_pretrained(out_dir / "backbone")
         model.tokenizer.save_pretrained(out_dir / "backbone")

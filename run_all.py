@@ -27,17 +27,24 @@ def run(*args):
 
 
 def train_all():
-    for model in ("mlp", "cnn", "bilstm"):
-        for seed in (42, 7, 123):
-            run("src/train.py", "--model", model, "--seed", str(seed), "--head", "cosine")
-    for model in ("mlp", "cnn", "bilstm"):
-        run("src/train.py", "--model", model, "--head", "interaction", "--out", f"ablation_interaction/{model}")
+    """Same sequence as scripts/train_all.ps1. Head per model was chosen on
+    validation AUC: MLP cosine, 1D-CNN interaction, BiLSTM cosine."""
+    seeds = ("42", "7", "123")
+    for s in seeds:  # MLP first: its seed-42 embeddings warm-start CNN / BiLSTM
+        run("src/train.py", "--model", "mlp", "--seed", s, "--head", "cosine")
+    run("src/train.py", "--model", "mlp", "--head", "interaction", "--out", "ablation_interaction/mlp")
+    for s in seeds:
+        run("src/train.py", "--model", "cnn", "--seed", s, "--head", "interaction")
+        run("src/train.py", "--model", "cnn", "--seed", s, "--head", "cosine", "--out", "ablation_cosine/cnn")
+    for s in seeds:
+        run("src/train.py", "--model", "bilstm", "--seed", s, "--head", "cosine")
+    run("src/train.py", "--model", "bilstm", "--head", "interaction", "--out", "ablation_interaction/bilstm")
     run("src/train.py", "--model", "sbert", "--backbone", "minilm", "--head", "cosine",
         "--out", "ablation_cosine/sbert")
     run("src/train.py", "--model", "sbert", "--backbone", "minilm", "--head", "interaction",
         "--out", "ablation_interaction/sbert_minilm")
-    run("src/train.py", "--model", "sbert", "--backbone", "mpnet", "--head", "cosine",
-        "--out", "sbert_mpnet_cosine", "--epochs", "5")
+    run("src/train.py", "--model", "sbert", "--backbone", "mpnet", "--head", "interaction",
+        "--out", "sbert_mpnet_interaction", "--epochs", "5")
 
 
 def main():

@@ -85,8 +85,6 @@ def train_variant(name, lambda_max, epochs, lr=2e-5):
     if model.head is not None:
         model.head.load_state_dict(torch.load(base_dir / "head.pt", map_location=DEVICE))
     batch_size = base_metrics.get("batch_size", 16)
-    if model.backbone.config.hidden_size > 384:
-        model.backbone.gradient_checkpointing_enable()  # larger backbone (mpnet): fit 8 GB
     adversary = Adversary(dim=model.backbone.config.hidden_size).to(DEVICE)
     optimizer = torch.optim.AdamW([
         {"params": model.parameters(), "lr": lr, "weight_decay": 0.01},
