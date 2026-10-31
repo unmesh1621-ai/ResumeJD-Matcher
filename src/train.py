@@ -32,6 +32,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from scipy.stats import spearmanr
 from sklearn.metrics import (
     accuracy_score, precision_score, recall_score, f1_score,
@@ -77,6 +78,33 @@ def load_pairs(data="real"):
     return rows
 
 
+def cv_rows(rows, n_folds, fold, seed=MAIN_SEED):
+    """Grouped K-fold over train+val (TEST is never touched): job descriptions
+    are shuffled with a fixed seed and dealt into n_folds groups, and fold
+    `fold` becomes the validation set. Used only for model selection
+    (scorer / backbone / debiasing strength), because the official 42-JD
+    validation split is too small to rank close configurations reliably."""
+    pooled = rows["train"] + rows["val"]
+    jds = sorted({r["jd_id"] for r in pooled})
+    random.Random(seed).shuffle(jds)
+    fold_of = {jd: i % n_folds for i, jd in enumerate(jds)}
+    return {"train": [r for r in pooled if fold_of[r["jd_id"]] != fold],
+            "val": [r for r in pooled if fold_of[r["jd_id"]] == fold],
+            "test": []}
+
+
+def write_cv_result(out_name, fold, model_label, history, best, extra=None):
+    out_dir = RESULTS_ROOT / "real" / "cv" / out_name
+    out_dir.mkdir(parents=True, exist_ok=True)
+    res = {"model": model_label, "fold": fold, "best_epoch": best["epoch"], "val_auc": best["auc"],
+           "val_within_resume_auc": within_resume_auc(best["val_rows"], best["val_preds"])[0],
+           "rank_weight": RANK_WEIGHT,
+           "val_loss_curve": history[1], "val_auc_curve": history[2], **(extra or {})}
+    (out_dir / f"fold_{fold}.json").write_text(json.dumps(res, indent=2), encoding="utf-8")
+    print(json.dumps({k: v for k, v in res.items() if not k.endswith("curve")}, indent=2))
+    return res
+
+
 def batches(rows, batch_size, shuffle=True):
     idx = list(range(len(rows)))
     if shuffle:
@@ -85,28 +113,71 @@ def batches(rows, batch_size, shuffle=True):
         yield idx[start:start + batch_size]
 
 
+# Within-resume ranking loss (off by default). When RANK_WEIGHT > 0, training
+# batches are built from whole resume groups, and for every two pairs in a
+# batch that share a resume and have different fit labels, the better-fitting
+# JD must score higher: softplus(-RANK_SCALE * (s_better - s_worse)). A
+# JD-independent "resume quality" score cannot reduce this term, so it pushes
+# the encoders towards genuine resume<->JD matching.
+RANK_WEIGHT = 0.0
+RANK_SCALE = 10.0
+
+
+def grouped_batches(groups, batch_size):
+    """Shuffle resumes, keep each resume's pairs together, chunk into batches."""
+    by_group = {}
+    for i, g in enumerate(groups):
+        by_group.setdefault(g, []).append(i)
+    order = list(by_group)
+    np.random.shuffle(order)
+    flat = [i for g in order for i in by_group[g]]
+    for start in range(0, len(flat), batch_size):
+        yield flat[start:start + batch_size]
+
+
+def rank_loss(preds, labels, groups):
+    same = groups.unsqueeze(1) == groups.unsqueeze(0)
+    better = labels.unsqueeze(1) > labels.unsqueeze(0) + 1e-6
+    mask = same & better
+    if not mask.any():
+        return preds.sum() * 0.0
+    diff = preds.unsqueeze(1) - preds.unsqueeze(0)
+    return F.softplus(-RANK_SCALE * diff)[mask].mean()
+
+
+def train_batches(groups, batch_size, train):
+    if train and RANK_WEIGHT > 0:
+        return grouped_batches(groups, batch_size)
+    return batches(range(len(groups)), batch_size, shuffle=train)
+
+
 def encode_split(rows, vocab):
     """Integer-encode a split once up front (re-tokenising ~600-word
     documents every epoch would dominate training time)."""
     resume = torch.tensor([vocab.encode(r["resume_text"]) for r in rows], dtype=torch.long)
     jd = torch.tensor([vocab.encode(r["jd_text"]) for r in rows], dtype=torch.long)
     labels = torch.tensor([r["similarity_label"] for r in rows], dtype=torch.float32)
-    return resume, jd, labels
+    resume_index = {}
+    groups = torch.tensor([resume_index.setdefault(r["resume_id"], len(resume_index)) for r in rows],
+                          dtype=torch.long)
+    return resume, jd, labels, groups
 
 
 def run_epoch_token_model(model, encoded, optimizer, train=True):
-    resume_all, jd_all, labels_all = encoded
+    resume_all, jd_all, labels_all, groups_all = encoded
     model.train(mode=train)
     total_loss, n_batches = 0.0, 0
     all_preds, all_labels = [], []
     loss_fn = nn.MSELoss()
     with torch.set_grad_enabled(train):
-        for idx in batches(range(len(labels_all)), BATCH_SIZE, shuffle=train):
+        for idx in train_batches(groups_all.tolist(), BATCH_SIZE, train):
             resume_ids = resume_all[idx].to(DEVICE)
             jd_ids = jd_all[idx].to(DEVICE)
             labels = labels_all[idx].to(DEVICE)
             preds = model(resume_ids, jd_ids)
             loss = loss_fn(preds, labels)
+            if train and RANK_WEIGHT > 0:
+                loss = loss + RANK_WEIGHT * rank_loss(preds, labels, groups_all[idx].to(DEVICE))
             if train:
                 optimizer.zero_grad()
                 loss.backward()
@@ -126,7 +197,7 @@ def run_epoch_sbert(model, rows, optimizer, scaler, train=True, batch_size=16):
     loss_fn = nn.MSELoss()
     use_amp = DEVICE.type == "cuda"
     with torch.set_grad_enabled(train):
-        for idx in batches(rows, batch_size, shuffle=train):
+        for idx in train_batches([r["resume_id"] for r in rows], batch_size, train):
             batch = [rows[i] for i in idx]
             resume_texts = [r["resume_text"] for r in batch]
             jd_texts = [r["jd_text"] for r in batch]
@@ -135,6 +206,10 @@ def run_epoch_sbert(model, rows, optimizer, scaler, train=True, batch_size=16):
                 preds = model(resume_texts, jd_texts, DEVICE)
             preds = preds.float()
             loss = loss_fn(preds, labels)
+            if train and RANK_WEIGHT > 0:
+                ids = {}
+                groups = torch.tensor([ids.setdefault(r["resume_id"], len(ids)) for r in batch], device=DEVICE)
+                loss = loss + RANK_WEIGHT * rank_loss(preds, labels, groups)
             if train:
                 optimizer.zero_grad()
                 scaler.scale(loss).backward()
@@ -345,6 +420,7 @@ def finalize(out_dir, model_key, model_label, rows, history, best, test_preds, t
         **tm,
         "train_seconds": elapsed,
         "device": str(DEVICE),
+        "rank_weight": RANK_WEIGHT,
         **(extra or {}),
     }
 
@@ -361,20 +437,23 @@ def finalize(out_dir, model_key, model_label, rows, history, best, test_preds, t
 
 
 def train_token_model(model_key, model_label, build_model, lr, data, seed, head, out_name,
-                      warm_start=True):
+                      warm_start=True, cv=None):
     cfg = DATA_CONFIG[data]
     preprocessing.MAX_LEN = cfg["max_len"]
     set_seed(seed)
 
     rows = load_pairs(data)
+    if cv:
+        rows = cv_rows(rows, *cv)
     results_dir = RESULTS_ROOT / data
-    vocab_path = results_dir / "vocab.json"
     vocab = Vocab.build([r["resume_text"] for r in rows["train"]] + [r["jd_text"] for r in rows["train"]],
                         vocab_size=cfg["vocab_size"])
     results_dir.mkdir(parents=True, exist_ok=True)
-    vocab.save(vocab_path)
+    if not cv:  # CV folds build their own vocab and never touch the main one
+        vocab.save(results_dir / "vocab.json")
 
-    encoded = {split: encode_split(rows[split], vocab) for split in ("train", "val", "test")}
+    splits = ("train", "val") if cv else ("train", "val", "test")
+    encoded = {split: encode_split(rows[split], vocab) for split in splits}
     model = build_model(len(vocab)).to(DEVICE)
 
     # Warm-start the embedding layer from the trained MLP's embeddings
@@ -384,6 +463,8 @@ def train_token_model(model_key, model_label, build_model, lr, data, seed, head,
     # mean-pooling encoder reliably avoids this and learns a solid token
     # embedding space, so reusing it gives the other encoders a better start.
     pretrained_embed_path = results_dir / "mlp" / "embedding.pt"
+    if cv:  # use the MLP trained on this fold's training part only (no leakage)
+        pretrained_embed_path = results_dir / "cv" / "mlp_cosine" / f"fold_{cv[1]}_embedding.pt"
     warm_started = False
     if warm_start and model_key != "mlp" and pretrained_embed_path.exists():
         pretrained = torch.load(pretrained_embed_path)
@@ -397,7 +478,8 @@ def train_token_model(model_key, model_label, build_model, lr, data, seed, head,
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode="min", factor=0.5, patience=3)
 
     out_dir = results_dir / out_name
-    out_dir.mkdir(parents=True, exist_ok=True)
+    if not cv:
+        out_dir.mkdir(parents=True, exist_ok=True)
     n_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
 
     def train_step():
@@ -414,6 +496,15 @@ def train_token_model(model_key, model_label, build_model, lr, data, seed, head,
     elapsed = time.time() - t0
 
     model.load_state_dict(best["state"])
+    if cv:
+        best["val_rows"] = rows["val"]
+        res = write_cv_result(out_name, cv[1], model_label, (tl, vl, va), best,
+                              extra={"head": head, "n_folds": cv[0], "train_seconds": elapsed,
+                                     "embedding_warm_started_from_mlp": warm_started})
+        if model_key == "mlp":
+            torch.save(model.embedding.weight.data.clone().cpu(),
+                       results_dir / "cv" / out_name / f"fold_{cv[1]}_embedding.pt")
+        return res
     _, test_preds, test_labels = run_epoch_token_model(model, encoded["test"], optimizer, train=False)
 
     metrics = finalize(out_dir, model_key, model_label, rows, (tl, vl, va), best,
@@ -427,12 +518,14 @@ def train_token_model(model_key, model_label, build_model, lr, data, seed, head,
     return metrics
 
 
-def train_sbert_model(data, seed, head, out_name, backbone="minilm", epochs=None, lr=2e-5):
+def train_sbert_model(data, seed, head, out_name, backbone="minilm", epochs=None, lr=2e-5, cv=None):
     from models import SiameseSBERT, SBERT_BACKBONES
 
     cfg = DATA_CONFIG[data]
     set_seed(seed)
     rows = load_pairs(data)
+    if cv:
+        rows = cv_rows(rows, *cv)
     max_len, batch_size = cfg["sbert_max_len"], 16
     if backbone == "mpnet":
         # all-mpnet-base-v2 was trained with max_seq_length 384; at that length
@@ -449,7 +542,8 @@ def train_sbert_model(data, seed, head, out_name, backbone="minilm", epochs=None
     scaler = torch.amp.GradScaler(enabled=DEVICE.type == "cuda")
 
     out_dir = RESULTS_ROOT / data / out_name
-    out_dir.mkdir(parents=True, exist_ok=True)
+    if not cv:
+        out_dir.mkdir(parents=True, exist_ok=True)
     n_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     label = f"SBERT ({'MPNet' if backbone == 'mpnet' else 'MiniLM'}, {head})"
 
@@ -468,6 +562,11 @@ def train_sbert_model(data, seed, head, out_name, backbone="minilm", epochs=None
     elapsed = time.time() - t0
 
     model.load_state_dict(best["state"])
+    if cv:
+        best["val_rows"] = rows["val"]
+        return write_cv_result(out_name, cv[1], label, (tl, vl, va), best,
+                               extra={"head": head, "backbone": SBERT_BACKBONES[backbone],
+                                      "n_folds": cv[0], "max_len": max_len, "train_seconds": elapsed})
     _, test_preds, test_labels = run_epoch_sbert(model, rows["test"], optimizer, scaler,
                                                  train=False, batch_size=32)
     metrics = finalize(out_dir, "sbert", label, rows, (tl, vl, va), best,
@@ -492,21 +591,34 @@ def main():
     parser.add_argument("--out", default=None,
                         help="results subdir under results/<data>/ (default: the model name)")
     parser.add_argument("--epochs", type=int, default=None, help="SBERT max epochs")
+    parser.add_argument("--cv-folds", type=int, default=None,
+                        help="model-selection mode: grouped K-fold over train+val, test untouched")
+    parser.add_argument("--fold", type=int, default=0)
+    parser.add_argument("--rank-weight", type=float, default=0.0,
+                        help="weight of the within-resume ranking loss (0 = plain MSE)")
     args = parser.parse_args()
 
     from models import SiameseMLP, SiameseCNN, SiameseBiLSTM
 
-    out = args.out or args.model
+    global RANK_WEIGHT
+    RANK_WEIGHT = args.rank_weight
     h = args.head
-    print(f"device: {DEVICE}  head: {h}  out: results/{args.data}/{out}")
+    cv = (args.cv_folds, args.fold) if args.cv_folds else None
+    if cv:  # results/real/cv/<config>/fold_<i>.json
+        out = args.out or (f"{args.model}_{h}" if args.model != "sbert" else f"sbert_{args.backbone}_{h}")
+        if RANK_WEIGHT > 0:
+            out += f"_rank{RANK_WEIGHT:g}"
+    else:
+        out = args.out or args.model
+    print(f"device: {DEVICE}  head: {h}  out: {out}  cv: {cv}")
     if args.model == "mlp":
-        train_token_model("mlp", "MLP", lambda vs: SiameseMLP(vs, head=h), 1e-3, args.data, args.seed, h, out)
+        train_token_model("mlp", "MLP", lambda vs: SiameseMLP(vs, head=h), 1e-3, args.data, args.seed, h, out, cv=cv)
     elif args.model == "cnn":
-        train_token_model("cnn", "1D-CNN", lambda vs: SiameseCNN(vs, head=h), 1e-3, args.data, args.seed, h, out)
+        train_token_model("cnn", "1D-CNN", lambda vs: SiameseCNN(vs, head=h), 1e-3, args.data, args.seed, h, out, cv=cv)
     elif args.model == "bilstm":
-        train_token_model("bilstm", "BiLSTM", lambda vs: SiameseBiLSTM(vs, head=h), 1e-3, args.data, args.seed, h, out)
+        train_token_model("bilstm", "BiLSTM", lambda vs: SiameseBiLSTM(vs, head=h), 1e-3, args.data, args.seed, h, out, cv=cv)
     elif args.model == "sbert":
-        train_sbert_model(args.data, args.seed, h, out, args.backbone, args.epochs)
+        train_sbert_model(args.data, args.seed, h, out, args.backbone, args.epochs, cv=cv)
 
 
 if __name__ == "__main__":

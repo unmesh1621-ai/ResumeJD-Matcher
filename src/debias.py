@@ -177,7 +177,7 @@ def plot(report, path):
     fig, axes = plt.subplots(1, 4, figsize=(15, 3.8))
     for ax, (key, title) in zip(axes, panels):
         vals = [report["variants"][v][key] for v in variants]
-        ax.bar(variants, vals, color=["tab:gray", "tab:blue", "tab:green"][:len(variants)])
+        ax.bar(variants, vals, color=["tab:gray", "tab:blue", "tab:green", "tab:olive", "tab:cyan"][:len(variants)])
         ax.set_title(title, fontsize=10)
         for i, v in enumerate(vals):
             ax.text(i, v, f"{v:.3f}", ha="center", va="bottom", fontsize=8)
@@ -189,13 +189,21 @@ def plot(report, path):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--epochs", type=int, default=2)
-    parser.add_argument("--lambda-max", type=float, default=1.0)
+    parser.add_argument("--lambdas", type=float, nargs="+", default=[1.0, 3.0],
+                        help="GRL strengths to try; the final one is chosen on VALIDATION")
+    parser.add_argument("--max-val-auc-drop", type=float, default=0.01)
     args = parser.parse_args()
 
     test_rows = load_test_rows(DATA)
     audit_set = build_audit_set(test_rows)
+    # selection uses a separate audit built from VALIDATION resumes/pairs
+    val_rows = load_pairs(DATA)["val"]
+    val_audit_set = build_audit_set(val_rows)
     report = {"method": "gradient-reversal adversary on resume embedding (Zhang et al. 2018)",
-              "lambda_max": args.lambda_max, "epochs": args.epochs, "variants": {}}
+              "epochs": args.epochs, "lambdas_tried": args.lambdas,
+              "selection_rule": (f"lowest VALIDATION probe accuracy among debiased variants whose "
+                                 f"validation AUC is within {args.max_val_auc_drop} of the undebiased model"),
+              "variants": {}}
 
     def record(label, model_dir, metrics):
         enc = load_encoder("sbert", DATA, model_dir=model_dir)
@@ -204,17 +212,36 @@ def main():
         a["test_auc"] = metrics["test_auc"]
         a["test_accuracy"] = metrics["test_accuracy"]
         a["test_f1"] = metrics["test_f1"]
+        a["val_auc"] = metrics["val_auc"]
+        v = audit_encoder(enc, val_rows, val_audit_set)
+        a["val_probe_accuracy"] = v["probe_test_accuracy"]
+        a["dir"] = model_dir.relative_to(RESULTS_ROOT / DATA).as_posix()
         report["variants"][label] = a
         print(label, json.dumps(a, indent=2), flush=True)
         del enc
         torch.cuda.empty_cache()
+        return a
 
     base_dir = RESULTS_ROOT / DATA / "sbert"
-    record("before", base_dir, json.loads((base_dir / "metrics.json").read_text(encoding="utf-8")))
+    before = record("before", base_dir, json.loads((base_dir / "metrics.json").read_text(encoding="utf-8")))
     m = train_variant("sbert_control", 0.0, args.epochs)
     record("control (λ=0)", RESULTS_ROOT / DATA / "sbert_control", m)
-    m = train_variant("sbert_debiased", args.lambda_max, args.epochs)
-    record(f"debiased (λ={args.lambda_max:g})", RESULTS_ROOT / DATA / "sbert_debiased", m)
+    candidates = []
+    for lam in args.lambdas:
+        name = f"sbert_debiased_l{lam:g}"
+        m = train_variant(name, lam, args.epochs)
+        candidates.append((f"debiased (λ={lam:g})", record(f"debiased (λ={lam:g})", RESULTS_ROOT / DATA / name, m)))
+
+    ok = [c for c in candidates if c[1]["val_auc"] >= before["val_auc"] - args.max_val_auc_drop]
+    chosen = (min(ok, key=lambda c: c[1]["val_probe_accuracy"]) if ok
+              else max(candidates, key=lambda c: c[1]["val_auc"]))
+    report["selected"] = chosen[0]
+    print(f"selected on validation: {chosen[0]}")
+    import shutil
+    final_dir = RESULTS_ROOT / DATA / "sbert_debiased"
+    if final_dir.exists():
+        shutil.rmtree(final_dir)
+    shutil.copytree(RESULTS_ROOT / DATA / chosen[1]["dir"], final_dir)
 
     out = RESULTS_ROOT / DATA / "fairness_report.json"
     out.write_text(json.dumps(report, indent=2), encoding="utf-8")
