@@ -15,19 +15,19 @@
     "false_negatives": 257
   },
   "1D-CNN": {
-    "error_rate": 0.4673109721432632,
+    "error_rate": 0.4286526435474702,
     "error_rate_by_fit_class": {
-      "No Fit": 0.7374562427071178,
-      "Potential Fit": 0.18468468468468469,
-      "Good Fit": 0.23580786026200873
+      "No Fit": 0.558926487747958,
+      "Potential Fit": 0.36711711711711714,
+      "Good Fit": 0.2445414847161572
     },
     "error_rate_by_resume_length": {
-      "short (<542 words)": 0.49169435215946844,
-      "medium (542-702)": 0.46409807355516636,
-      "long (>702)": 0.4453924914675768
+      "short (<542 words)": 0.446843853820598,
+      "medium (542-702)": 0.43782837127845886,
+      "long (>702)": 0.40102389078498296
     },
-    "false_positives": 632,
-    "false_negatives": 190
+    "false_positives": 479,
+    "false_negatives": 275
   },
   "BiLSTM": {
     "error_rate": 0.4127345082433201,
@@ -45,52 +45,52 @@
     "false_negatives": 347
   },
   "SBERT": {
-    "error_rate": 0.3172256964184196,
+    "error_rate": 0.3268902785673678,
     "error_rate_by_fit_class": {
-      "No Fit": 0.4690781796966161,
-      "Potential Fit": 0.22747747747747749,
-      "Good Fit": 0.12008733624454149
+      "No Fit": 0.3185530921820303,
+      "Potential Fit": 0.34234234234234234,
+      "Good Fit": 0.32751091703056767
     },
     "error_rate_by_resume_length": {
-      "short (<542 words)": 0.38372093023255816,
-      "medium (542-702)": 0.29597197898423816,
-      "long (>702)": 0.2696245733788396
+      "short (<542 words)": 0.34551495016611294,
+      "medium (542-702)": 0.31523642732049034,
+      "long (>702)": 0.3191126279863481
     },
-    "false_positives": 402,
-    "false_negatives": 156
+    "false_positives": 273,
+    "false_negatives": 302
   },
   "cross_model": {
     "pairwise_error_overlap": {
       "MLP & 1D-CNN": {
-        "both_wrong": 489,
-        "jaccard": 0.459
+        "both_wrong": 394,
+        "jaccard": 0.361
       },
       "MLP & BiLSTM": {
         "both_wrong": 586,
         "jaccard": 0.672
       },
       "MLP & SBERT": {
-        "both_wrong": 358,
-        "jaccard": 0.384
+        "both_wrong": 311,
+        "jaccard": 0.312
       },
       "1D-CNN & BiLSTM": {
-        "both_wrong": 459,
-        "jaccard": 0.421
+        "both_wrong": 376,
+        "jaccard": 0.341
       },
       "1D-CNN & SBERT": {
-        "both_wrong": 353,
-        "jaccard": 0.344
+        "both_wrong": 328,
+        "jaccard": 0.328
       },
       "BiLSTM & SBERT": {
-        "both_wrong": 334,
-        "jaccard": 0.352
+        "both_wrong": 311,
+        "jaccard": 0.314
       }
     },
-    "wrong_for_all_models": 235,
+    "wrong_for_all_models": 164,
     "wrong_for_all_by_fit_class": {
-      "No Fit": 225,
-      "Potential Fit": 8,
-      "Good Fit": 2
+      "No Fit": 108,
+      "Good Fit": 32,
+      "Potential Fit": 24
     },
     "n_test_pairs": 1759
   }

@@ -1,0 +1,62 @@
+﻿device: cuda  head: interaction  out: results/real/sbert_mpnet_interaction
+python : 
+At line:1 char:389
++ ... ing[]]$a) { python src/train.py @a *> "results/real/logs/$name.log";  ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]
+Loading weights:  26%|██▌       | 51/199 [00:00<00:00, 501.89it/s]
+Loading weights:  51%|█████▏    | 102/199 [00:00<00:00, 408.51it/s]
+Loading weights: 100%|██████████| 199/199 [00:00<00:00, 812.86it/s]
+[SBERT (MPNet, interaction)] epoch 1: train_loss=0.1305 val_loss=0.1682 val_auc=0.8174
+[SBERT (MPNet, interaction)] epoch 2: train_loss=0.0978 val_loss=0.1407 val_auc=0.8389
+[SBERT (MPNet, interaction)] epoch 3: train_loss=0.0827 val_loss=0.1495 val_auc=0.8869
+[SBERT (MPNet, interaction)] epoch 4: train_loss=0.0664 val_loss=0.1219 val_auc=0.8701
+[SBERT (MPNet, interaction)] epoch 5: train_loss=0.0524 val_loss=0.1308 val_auc=0.8694
+[SBERT (MPNet, interaction)] early stopping at epoch 5, best epoch 3
+{
+  "model": "SBERT (MPNet, interaction)",
+  "seed": 42,
+  "trainable_parameters": 109879937,
+  "epochs_run": 5,
+  "best_epoch": 3,
+  "best_val_loss": 0.14945530268596485,
+  "decision_threshold": 0.174,
+  "val_accuracy": 0.7979910714285714,
+  "val_precision": 0.7947154471544715,
+  "val_recall": 0.8301486199575372,
+  "val_f1": 0.8120456905503635,
+  "val_auc": 0.8868864743349569,
+  "val_within_resume_auc": 0.8745305898920357,
+  "test_accuracy": 0.7350767481523593,
+  "test_precision": 0.6967509025270758,
+  "test_recall": 0.8558758314855875,
+  "test_f1": 0.7681592039800995,
+  "test_auc": 0.7876894855720594,
+  "test_spearman": 0.5059064469038363,
+  "test_within_resume_auc": 0.7118186927710738,
+  "test_within_resume_auc_n_resumes": 234,
+  "test_mse": 0.1437684490375175,
+  "test_p_at_1": 0.7183098591549296,
+  "test_p_at_1_random": 0.41756882146902213,
+  "test_p_at_1_n_jds": 71,
+  "test_p_at_3": 0.6570048309178744,
+  "test_p_at_3_random": 0.4296722655695735,
+  "test_p_at_3_n_jds": 69,
+  "test_p_at_5": 0.6463768115942029,
+  "test_p_at_5_random": 0.4296722655695735,
+  "test_p_at_5_n_jds": 69,
+  "train_seconds": 1676.1682901382446,
+  "device": "cuda",
+  "head": "interaction",
+  "backbone": "sentence-transformers/all-mpnet-base-v2",
+  "max_len": 384,
+  "lr": 2e-05,
+  "batch_size": 8
+}
+
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]
+Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  4.10it/s]
+Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  4.10it/s]

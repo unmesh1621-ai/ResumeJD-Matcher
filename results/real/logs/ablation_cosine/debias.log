@@ -1,0 +1,94 @@
+﻿python : 
+At line:1 char:444
++ ... TEXITCODE"; python src/debias.py *> results/real/logs/debias.log; "de ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 103/103 [00:00<00:00, 2439.33it/s]
+before {
+  "model": "SBERT",
+  "probe_test_accuracy": 0.5794979079497908,
+  "chance_accuracy": 0.5,
+  "leakage_gap": 0.07949790794979084,
+  "mean_cosine_between_name_swapped_embeddings": 0.9894438982009888,
+  "mean_abs_score_diff": 0.004510480910539627,
+  "max_abs_score_diff": 0.21452069282531738,
+  "mean_signed_score_diff_A_minus_B": -0.0002970962377730757,
+  "decision_flip_rate": 0.0045480386583285955,
+  "tpr_group_A": 0.8270509977827051,
+  "tpr_group_B": 0.8248337028824834,
+  "tpr_gap_A_minus_B": 0.0022172949002217113,
+  "test_auc_with_names_A": 0.7386425084151129,
+  "test_auc_with_names_B": 0.737566201905787,
+  "tpr_gap_abs": 0.0022172949002217113,
+  "test_auc": 0.7404031492314499,
+  "test_accuracy": 0.6827743035815804,
+  "test_f1": 0.7278048780487805
+}
+
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 103/103 [00:00<00:00, 2314.14it/s]
+[sbert_control] epoch 1: {'epoch': 1, 'task_loss': 0.06138669135617817, 'adv_loss': 0.6941181597952357, 'adv_train_acc': 0.5123502994011976, 'val_loss': 0.12546180601098708, 'val_auc': 0.8601423754215062, 'lambda_end': 0.0}
+[sbert_control] epoch 2: {'epoch': 2, 'task_loss': 0.05253063841349261, 'adv_loss': 0.6941580934795791, 'adv_train_acc': 0.5040044910358098, 'val_loss': 0.12918223586997815, 'val_auc': 0.8428225302859998, 'lambda_end': 0.0}
+
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]
+Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  8.06it/s]
+Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  8.04it/s]
+
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 103/103 [00:00<00:00, 2123.60it/s]
+control (λ=0) {
+  "model": "SBERT",
+  "probe_test_accuracy": 0.5543933054393305,
+  "chance_accuracy": 0.5,
+  "leakage_gap": 0.05439330543933052,
+  "mean_cosine_between_name_swapped_embeddings": 0.9975987672805786,
+  "mean_abs_score_diff": 0.0028030809480696917,
+  "max_abs_score_diff": 0.07936826348304749,
+  "mean_signed_score_diff_A_minus_B": -0.0003489077789708972,
+  "decision_flip_rate": 0.0028425241614553724,
+  "tpr_group_A": 0.7195121951219512,
+  "tpr_group_B": 0.7217294900221729,
+  "tpr_gap_A_minus_B": -0.0022172949002217113,
+  "test_auc_with_names_A": 0.7547534714765839,
+  "test_auc_with_names_B": 0.755012199002864,
+  "tpr_gap_abs": 0.0022172949002217113,
+  "test_auc": 0.7548841288773555,
+  "test_accuracy": 0.6924388857305287,
+  "test_f1": 0.7051771117166212
+}
+
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 103/103 [00:00<00:00, 2093.92it/s]
+[sbert_debiased] epoch 1: {'epoch': 1, 'task_loss': 0.061918663357323156, 'adv_loss': 0.6947554606877401, 'adv_train_acc': 0.5079341317543726, 'val_loss': 0.12497656020734992, 'val_auc': 0.8609216935181716, 'lambda_end': 0.9865142576601473}
+[sbert_debiased] epoch 2: {'epoch': 2, 'task_loss': 0.054128341404665374, 'adv_loss': 0.6956907619616228, 'adv_train_acc': 0.5059880239520959, 'val_loss': 0.12915791597749507, 'val_auc': 0.8374572249281877, 'lambda_end': 0.9999092042625952}
+
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]
+Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  8.85it/s]
+Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  8.82it/s]
+
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 103/103 [00:00<00:00, 1937.79it/s]
+debiased (λ=1) {
+  "model": "SBERT",
+  "probe_test_accuracy": 0.5167364016736402,
+  "chance_accuracy": 0.5,
+  "leakage_gap": 0.01673640167364021,
+  "mean_cosine_between_name_swapped_embeddings": 0.9992607831954956,
+  "mean_abs_score_diff": 0.002568243071436882,
+  "max_abs_score_diff": 0.09140774607658386,
+  "mean_signed_score_diff_A_minus_B": -0.000394394010072574,
+  "decision_flip_rate": 0.003979533826037522,
+  "tpr_group_A": 0.802660753880266,
+  "tpr_group_B": 0.802660753880266,
+  "tpr_gap_A_minus_B": 0.0,
+  "test_auc_with_names_A": 0.7618296693203486,
+  "test_auc_with_names_B": 0.76176628107641,
+  "tpr_gap_abs": 0.0,
+  "test_auc": 0.7620547622682123,
+  "test_accuracy": 0.6975554292211483,
+  "test_f1": 0.731041456016178
+}
+wrote C:\Users\unmes\OneDrive\Desktop\ResumeJD-Matcher\results\real\fairness_report.json

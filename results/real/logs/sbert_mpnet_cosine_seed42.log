@@ -1,0 +1,14 @@
+﻿device: cuda  head: cosine  out: results/real/sbert_mpnet_cosine
+python : 
+At line:1 char:389
++ ... ing[]]$a) { python src/train.py @a *> "results/real/logs/$name.log";  ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]
+Loading weights:  21%|██        | 41/199 [00:00<00:00, 363.54it/s]
+Loading weights:  39%|███▉      | 78/199 [00:00<00:00, 338.89it/s]
+Loading weights: 100%|██████████| 199/199 [00:00<00:00, 724.96it/s]
+[SBERT (MPNet, cosine)] epoch 1: train_loss=0.1202 val_loss=0.1392 val_auc=0.8489
+[SBERT (MPNet, cosine)] epoch 2: train_loss=0.0802 val_loss=0.1258 val_auc=0.8737

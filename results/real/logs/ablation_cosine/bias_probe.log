@@ -1,0 +1,78 @@
+﻿auditing mlp ...
+{
+  "model": "MLP",
+  "probe_test_accuracy": 0.50418410041841,
+  "chance_accuracy": 0.5,
+  "leakage_gap": 0.004184100418409997,
+  "mean_cosine_between_name_swapped_embeddings": 0.999724268913269,
+  "mean_abs_score_diff": 0.004229145590215921,
+  "max_abs_score_diff": 0.04352068901062012,
+  "mean_signed_score_diff_A_minus_B": -0.0009765001595951617,
+  "decision_flip_rate": 0.0045480386583285955,
+  "tpr_group_A": 0.7150776053215078,
+  "tpr_group_B": 0.7184035476718403,
+  "tpr_gap_A_minus_B": -0.003325942350332567,
+  "test_auc_with_names_A": 0.619626552688567,
+  "test_auc_with_names_B": 0.6195696326327854
+}
+auditing cnn ...
+{
+  "model": "1D-CNN",
+  "probe_test_accuracy": 0.5125523012552301,
+  "chance_accuracy": 0.5,
+  "leakage_gap": 0.012552301255230103,
+  "mean_cosine_between_name_swapped_embeddings": 0.9965853691101074,
+  "mean_abs_score_diff": 0.014481215737760067,
+  "max_abs_score_diff": 0.2122524082660675,
+  "mean_signed_score_diff_A_minus_B": -0.009397917427122593,
+  "decision_flip_rate": 0.015349630471859011,
+  "tpr_group_A": 0.7982261640798226,
+  "tpr_group_B": 0.8059866962305987,
+  "tpr_gap_A_minus_B": -0.0077605321507761005,
+  "test_auc_with_names_A": 0.5180578876967299,
+  "test_auc_with_names_B": 0.5168742092639979
+}
+auditing bilstm ...
+{
+  "model": "BiLSTM",
+  "probe_test_accuracy": 0.5062761506276151,
+  "chance_accuracy": 0.5,
+  "leakage_gap": 0.006276150627615107,
+  "mean_cosine_between_name_swapped_embeddings": 0.9999077320098877,
+  "mean_abs_score_diff": 0.0031653062906116247,
+  "max_abs_score_diff": 0.030942827463150024,
+  "mean_signed_score_diff_A_minus_B": -0.0005034464993514121,
+  "decision_flip_rate": 0.003979533826037522,
+  "tpr_group_A": 0.61529933481153,
+  "tpr_group_B": 0.6175166297117517,
+  "tpr_gap_A_minus_B": -0.0022172949002217113,
+  "test_auc_with_names_A": 0.6260805108316279,
+  "test_auc_with_names_B": 0.6264336739050005
+}
+auditing sbert ...
+python : 
+At line:1 char:355
++ ... JD-Matcher; python src/bias_probe.py *> results/real/logs/bias_probe. ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 103/103 [00:00<00:00, 1668.24it/s]
+{
+  "model": "SBERT",
+  "probe_test_accuracy": 0.5794979079497908,
+  "chance_accuracy": 0.5,
+  "leakage_gap": 0.07949790794979084,
+  "mean_cosine_between_name_swapped_embeddings": 0.9894438982009888,
+  "mean_abs_score_diff": 0.004510480910539627,
+  "max_abs_score_diff": 0.21452069282531738,
+  "mean_signed_score_diff_A_minus_B": -0.0002970962377730757,
+  "decision_flip_rate": 0.0045480386583285955,
+  "tpr_group_A": 0.8270509977827051,
+  "tpr_group_B": 0.8248337028824834,
+  "tpr_gap_A_minus_B": 0.0022172949002217113,
+  "test_auc_with_names_A": 0.7386425084151129,
+  "test_auc_with_names_B": 0.737566201905787
+}
+wrote C:\Users\unmes\OneDrive\Desktop\ResumeJD-Matcher\results\real\bias_probe_report.json
