@@ -239,5 +239,20 @@ streamlit run app.py
 ## Use of external code / LLM assistance
 
 The guidelines (§9) require disclosure. Pretrained weights come from `sentence-transformers/all-MiniLM-L6-v2`
-and `sentence-transformers/all-mpnet-base-v2` (HuggingFace). The dataset is cited above. An LLM assistant (Claude) helped write parts of the code.
-<!-- Team: list exactly which files/functions here before submission. -->
+and `sentence-transformers/all-mpnet-base-v2` (HuggingFace). The dataset is cited above.
+
+An LLM-based coding assistant (Anthropic Claude, via Claude Code) was used in Phase 3 for:
+1. Porting and extending the interim (synthetic-data) code to the real dataset. This covers
+   `data/download_real.py`, `data/prepare_real.py` and the test-set evaluation, multi-seed and
+   cross-validation logic in `src/train.py`.
+2. Writing the evaluation and analysis scripts: `src/evaluate.py`, `src/baselines.py`,
+   `src/cv_select.py`, `src/select_sbert.py`, the counterfactual audit in `src/bias_probe.py`, and
+   `src/debias.py`.
+3. Writing the demo and pipeline code: `src/model_io.py`, `src/predict.py`, `app.py`, `run_all.py`
+   and `scripts/*.ps1`.
+4. Auditing the results for leakage and reproducibility, and drafting this README.
+
+The four architectures and their assignment to members come from our Phase 1 synopsis and Phase 2
+interim work. So do the bias-probing and debiasing objectives. Every reported number is produced by
+running the code in this repository and can be re-derived from the saved prediction files; none were
+written by hand. The final report text is written by the team members.
